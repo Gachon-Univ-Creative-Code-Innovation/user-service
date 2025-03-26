@@ -1,0 +1,12 @@
+# Java / Gradle / IntelliJ 기반 프로젝트 예시
+*.class
+*.jar
+*.war
+*.log
+
+# IntelliJ
+.idea/
+*.iml
+
+# OS
+.DS_Store
