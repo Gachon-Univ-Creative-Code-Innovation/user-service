@@ -1,8 +1,12 @@
-# Java / Gradle / IntelliJ 기반 프로젝트 예시
 *.class
 *.jar
 *.war
 *.log
+
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
 
 # IntelliJ
 .idea/
@@ -10,3 +14,26 @@
 
 # OS
 .DS_Store
+
+
+# Env
+.env
+.env.*
+
+# Docker
+*.jar
+docker-compose.override.yml
+
+# Test/Reports
+test-output/
+coverage/
+reports/
+
+# GitHub Actions temp files
+.github/workflows/*.log
+
+# Optional: VSCode
+.vscode/
+
+# Optional: Mac auto files
+__MACOSX/
