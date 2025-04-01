@@ -1,4 +1,7 @@
 package com.gucci.user_service.user.repository;
 
-public interface UserRepository extends org.springframework.data.jpa.repository.JpaRepository<com.gucci.user_service.user.domain.User, java.lang.Long> {
-  }
+import com.gucci.user_service.user.domain.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface UserRepository extends JpaRepository<User, Long> {
+}

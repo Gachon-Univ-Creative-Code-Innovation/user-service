@@ -12,7 +12,8 @@ build/
 # IntelliJ
 .idea/
 *.iml
-
+# 모든 Spring Boot 설정 파일 무시 (application-xxx.yml 형식 포함)
+src/main/resources/application*.yml
 # OS
 .DS_Store
 
