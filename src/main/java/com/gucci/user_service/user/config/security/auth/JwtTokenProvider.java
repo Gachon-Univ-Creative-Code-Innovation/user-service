@@ -26,17 +26,38 @@ public class JwtTokenProvider {
         );
 
     }
-    public String createToken(String email, String role){
-        // Claims는 jwt토큰의 payload에 해당한다.
+    public String createToken(String email, Long userId, String role) {
+        // Claims is the payload of the JWT token
         Claims claims = Jwts.claims().setSubject(email);
+        claims.put("user_id", userId);
         claims.put("role", role);
         Date now = new Date();
         String token = Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + expiration*60*1000L))
+                .setExpiration(new Date(now.getTime() + expiration * 60 * 1000L))
                 .signWith(SECRET_KEY)
                 .compact();
         return token;
+    }
+
+    public Claims extractClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(SECRET_KEY)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    public String getEmailFromToken(String token) {
+        return extractClaims(token).getSubject();
+    }
+
+    public Long getUserIdFromToken(String token) {
+        return extractClaims(token).get("user_id", Long.class);
+    }
+
+    public String getRoleFromToken(String token) {
+        return extractClaims(token).get("role", String.class);
     }
 }

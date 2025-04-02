@@ -6,4 +6,6 @@ import com.gucci.user_service.user.dto.SignUpDtoReq;
 
 public interface UserService {
     public User signUp(SignUpDtoReq signUpDtoReq);
+
+    public boolean isEmailDuplicated(String email);
 }

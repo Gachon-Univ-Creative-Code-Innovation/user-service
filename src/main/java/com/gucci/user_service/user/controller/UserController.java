@@ -14,6 +14,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.regex.Pattern;
+
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -36,6 +38,29 @@ public class UserController {
 
        return ResponseEntity.status(response.getStatus()).body(response);
 
+    }
+
+    @GetMapping("/check-email/{email}")
+    public ResponseEntity<Response<Boolean>> checkEmail(@PathVariable String email) {
+        if (email == null || email.isEmpty()) {
+            Response<Boolean> response = new Response<>(400, "이메일이 제공되지 않았습니다.", false);
+            return ResponseEntity.status(response.getStatus()).body(response);
+        }
+        if (!isValidEmail(email)) {
+            Response<Boolean> response = new Response<>(400, "잘못된 이메일 형식입니다.", false);
+            return ResponseEntity.status(response.getStatus()).body(response);
+        }
+        boolean isDuplicated = userService.isEmailDuplicated(email);
+        Response<Boolean> response = new Response<>(200, "이메일 중복 확인", isDuplicated);
+
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+
+    private boolean isValidEmail(String email) {
+        String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
+        Pattern pattern = Pattern.compile(emailRegex);
+        return pattern.matcher(email).matches();
     }
 
 }

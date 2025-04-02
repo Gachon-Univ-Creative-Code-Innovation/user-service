@@ -42,6 +42,7 @@ public class SecurityConfig {
                         a->a.requestMatchers(
                                         "/api/user/signup",
                                         "/api/user/health-check",
+                                        "/api/user/check-email/**",
                                         "/member/google/login",
                                         "/member/kakao/login"
                                 )

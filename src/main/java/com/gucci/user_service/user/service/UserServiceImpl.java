@@ -29,4 +29,9 @@ public class UserServiceImpl implements UserService {
                         .password(passwordEncoder.encode(signUpDtoReq.getPassword()))
                 .build());
     }
+
+    @Override
+    public boolean isEmailDuplicated(String email) {
+        return userRepository.existsByEmail(email);
+    }
 }

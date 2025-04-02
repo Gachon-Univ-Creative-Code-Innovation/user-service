@@ -8,7 +8,8 @@
 .gradle/
 build/
 !gradle/wrapper/gradle-wrapper.jar
-
+# .gitignore
+src/main/resources/application.yml
 # IntelliJ
 .idea/
 *.iml
