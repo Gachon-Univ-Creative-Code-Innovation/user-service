@@ -1,6 +1,7 @@
 package com.gucci.user_service.user.config.error;
 
 import com.gucci.user_service.user.config.ErrorResponse;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -78,6 +79,15 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(
                 new ErrorResponse(403, e.getMessage(), null),
                 HttpStatus.FORBIDDEN
+        );
+    }
+
+    // 🔹 DataIntegrityViolationException (데이터 무결성 위반)
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException e) {
+        return new ResponseEntity<>(
+                new ErrorResponse(400, "데이터 무결성 위반: " + e.getRootCause().getMessage(), null),
+                HttpStatus.BAD_REQUEST
         );
     }
 

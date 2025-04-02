@@ -4,6 +4,7 @@ import com.gucci.user_service.user.config.Response;
 import com.gucci.user_service.user.domain.User;
 import com.gucci.user_service.user.dto.SignUpDtoReq;
 import com.gucci.user_service.user.dto.SignUpDtoRes;
+import com.gucci.user_service.user.service.EmailVerificationService;
 import com.gucci.user_service.user.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Null;
@@ -11,6 +12,7 @@ import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +25,8 @@ import java.util.regex.Pattern;
 public class UserController {
     private final UserService userService;
     private final Environment environment;
+    private final EmailVerificationService emailService;
+
 
     @GetMapping("/health-check")
     public String status(){
@@ -56,6 +60,19 @@ public class UserController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @PostMapping("/send/{email}")
+    public ResponseEntity<Response<Null>> sendCode(@PathVariable String email) {
+        emailService.sendVerificationCode(email);
+        Response<Null> response = new Response<>(200, "인증 코드가 전송되었습니다.", null);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @PostMapping("/verify")
+    public ResponseEntity<Response<String>> verifyCode(@RequestParam String email, @RequestParam String code) {
+        boolean isValid = emailService.verifyCode(email, code);
+        Response<String> response = new Response<>(200, "이메일 인증 성공", null);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
 
     private boolean isValidEmail(String email) {
         String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
