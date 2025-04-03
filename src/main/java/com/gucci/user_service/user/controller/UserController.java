@@ -4,6 +4,8 @@ import com.gucci.user_service.user.config.Response;
 import com.gucci.user_service.user.domain.User;
 import com.gucci.user_service.user.dto.SignUpDtoReq;
 import com.gucci.user_service.user.dto.SignUpDtoRes;
+import com.gucci.user_service.user.dto.VerifyCheckReq;
+import com.gucci.user_service.user.dto.VerifySendReq;
 import com.gucci.user_service.user.service.EmailVerificationService;
 import com.gucci.user_service.user.service.UserService;
 import jakarta.validation.Valid;
@@ -60,16 +62,17 @@ public class UserController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @PostMapping("/send/{email}")
-    public ResponseEntity<Response<Null>> sendCode(@PathVariable String email) {
-        emailService.sendVerificationCode(email);
+    @PostMapping("/verify/send")
+    public ResponseEntity<Response<Null>> sendCode(@Valid @RequestBody VerifySendReq verifySendReq) {
+
+        emailService.sendVerificationCode(verifySendReq.getEmail());
         Response<Null> response = new Response<>(200, "인증 코드가 전송되었습니다.", null);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @PostMapping("/verify")
-    public ResponseEntity<Response<String>> verifyCode(@RequestParam String email, @RequestParam String code) {
-        boolean isValid = emailService.verifyCode(email, code);
+    @PostMapping("/verify/check")
+    public ResponseEntity<Response<String>> verifyCode(@Valid @RequestBody VerifyCheckReq verifyCheckReq) {
+        boolean isValid = emailService.verifyCode(verifyCheckReq.getEmail(), verifyCheckReq.getCode());
         Response<String> response = new Response<>(200, "이메일 인증 성공", null);
         return ResponseEntity.status(response.getStatus()).body(response);
     }

@@ -4,6 +4,7 @@ import com.gucci.user_service.user.domain.Role;
 import com.gucci.user_service.user.domain.User;
 import com.gucci.user_service.user.dto.SignUpDtoReq;
 import com.gucci.user_service.user.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 @Slf4j
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
