@@ -65,7 +65,7 @@ class UserControllerTest {
             request.setRole("USER");
 
             User savedUser = User.builder()
-                    .user_id(1L)
+                    .userId(1L)
                     .email(request.getEmail())
                     .name(request.getName())
                     .nickname(request.getNickname())

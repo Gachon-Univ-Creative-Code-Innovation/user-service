@@ -37,7 +37,6 @@ public class EmailVerificationService {
             message.setSubject("Email Verification Code");
             message.setText("Verification code: " + code);
 
-// ❗ 중요: 본인 계정과 정확히 일치해야 함
             message.setFrom(fromAddress); // <- 여기 사용!
 
             mailSender.send(message);

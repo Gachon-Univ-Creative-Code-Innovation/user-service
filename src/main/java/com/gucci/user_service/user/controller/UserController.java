@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.regex.Pattern;
@@ -39,7 +40,7 @@ public class UserController {
     public ResponseEntity<Response<SignUpDtoRes>> signUp(@Valid @RequestBody SignUpDtoReq signUpDtoReq){
 
        User user = userService.signUp(signUpDtoReq);
-       SignUpDtoRes signUpDtoRes = new SignUpDtoRes(user.getUser_id());
+       SignUpDtoRes signUpDtoRes = new SignUpDtoRes(user.getUserId());
        Response<SignUpDtoRes> response = new Response<>(201, user.getName()+"님 회원가입 완료", signUpDtoRes);
 
        return ResponseEntity.status(response.getStatus()).body(response);
@@ -52,7 +53,8 @@ public class UserController {
             Response<Boolean> response = new Response<>(400, "이메일이 제공되지 않았습니다.", false);
             return ResponseEntity.status(response.getStatus()).body(response);
         }
-        if (!isValidEmail(email)) {
+        if (!StringUtils.hasText(email)) {
+
             Response<Boolean> response = new Response<>(400, "잘못된 이메일 형식입니다.", false);
             return ResponseEntity.status(response.getStatus()).body(response);
         }
@@ -77,10 +79,10 @@ public class UserController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    private boolean isValidEmail(String email) {
-        String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
-        Pattern pattern = Pattern.compile(emailRegex);
-        return pattern.matcher(email).matches();
-    }
+//    private boolean isValidEmail(String email) {
+//        String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
+//        Pattern pattern = Pattern.compile(emailRegex);
+//        return pattern.matcher(email).matches();
+//    }
 
 }
