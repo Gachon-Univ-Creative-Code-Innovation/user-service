@@ -39,4 +39,5 @@ spring:
     import: optional:.env[.properties]
 jwt:
   secret: ${JWT_SECRET}
-  expiration: 3000 #분단위
+  access-expiration: 60      # 1시간
+  refresh-expiration: 3000   # 50시간

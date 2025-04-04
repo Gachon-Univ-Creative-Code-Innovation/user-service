@@ -1,12 +1,11 @@
 package com.gucci.user_service.user.controller;
 
 import com.gucci.user_service.user.config.Response;
+import com.gucci.user_service.user.config.security.auth.JwtTokenProvider;
 import com.gucci.user_service.user.domain.User;
-import com.gucci.user_service.user.dto.SignUpDtoRequest;
-import com.gucci.user_service.user.dto.SignUpDtoResponse;
-import com.gucci.user_service.user.dto.VerifyCheckRequest;
-import com.gucci.user_service.user.dto.VerifySendRequest;
+import com.gucci.user_service.user.dto.*;
 import com.gucci.user_service.user.service.EmailVerificationService;
+import com.gucci.user_service.user.service.TokenService;
 import com.gucci.user_service.user.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Null;
@@ -24,6 +23,8 @@ public class UserController {
     private final UserService userService;
     private final Environment environment;
     private final EmailVerificationService emailService;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final TokenService tokenService;
 
 
     @GetMapping("/health-check")
@@ -71,5 +72,28 @@ public class UserController {
     }
 
 
+    @PostMapping("/signin")
+    public ResponseEntity<?>login(@RequestBody @Valid LoginDtoRequest loginDTORequest){
+        User user = userService.login(loginDTORequest);
+        String accessToken = jwtTokenProvider.createAccessToken(
+                user.getEmail(),
+                user.getUserId(),
+                user.getRole().toString()
+        );
+
+        String refreshToken = jwtTokenProvider.createRefreshToken(
+                user.getEmail(),
+                user.getUserId(),
+                user.getRole().toString()
+        );
+
+        tokenService.saveRefreshToken(user.getUserId(), refreshToken, jwtTokenProvider.getRefreshExpiration());
+
+
+        Response<LoginDtoResponse> response = new Response<>(201, "로그인 성공", new LoginDtoResponse(accessToken, refreshToken));
+
+        return ResponseEntity.status(response.getStatus()).body(response);
+
+    }
 
 }
