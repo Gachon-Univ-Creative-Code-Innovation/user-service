@@ -1,6 +1,8 @@
 package com.gucci.user_service.user.service;
 
 import com.gucci.user_service.user.config.error.CustomException;
+//import com.gucci.common.exception.CustomException;
+import com.gucci.common.exception.ErrorCode;
 import com.gucci.user_service.user.service.util.CodeGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +46,7 @@ public class EmailVerificationService {
         } catch (Exception e) {
             log.error("Failed to send verification code to {}: {}", email, e.getMessage());
             throw new CustomException("Failed to send verification code", 500);
+//            throw new CustomException(ErrorCode.INVALID_VERIFICATION_CODE);
         }
     }
 

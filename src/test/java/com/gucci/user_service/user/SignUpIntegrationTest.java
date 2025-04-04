@@ -2,7 +2,7 @@ package com.gucci.user_service.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gucci.user_service.user.domain.User;
-import com.gucci.user_service.user.dto.SignUpDtoReq;
+import com.gucci.user_service.user.dto.SignUpDtoRequest;
 import com.gucci.user_service.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,7 +38,7 @@ class SignUpIntegrationTest {
     @DisplayName("회원가입 정상 요청 시 201 응답과 사용자 저장 여부 확인")
     void signUp_whenValidRequest_thenReturns201AndSavesUser() throws Exception {
         // given
-        SignUpDtoReq request = new SignUpDtoReq();
+        SignUpDtoRequest request = new SignUpDtoRequest();
         request.setEmail("integration@test.com");
         request.setName("통합테스트");
         request.setNickname("integTester");

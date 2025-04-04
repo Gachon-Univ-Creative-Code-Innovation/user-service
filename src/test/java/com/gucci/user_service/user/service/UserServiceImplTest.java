@@ -3,7 +3,7 @@ package com.gucci.user_service.user.service;
 
 import com.gucci.user_service.user.domain.Role;
 import com.gucci.user_service.user.domain.User;
-import com.gucci.user_service.user.dto.SignUpDtoReq;
+import com.gucci.user_service.user.dto.SignUpDtoRequest;
 import com.gucci.user_service.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,25 +34,25 @@ public class UserServiceImplTest {
 
     @Test
     public void testSignUp() {
-        SignUpDtoReq signUpDtoReq = new SignUpDtoReq();
-        signUpDtoReq.setEmail("test@example.com");
-        signUpDtoReq.setName("Test User");
-        signUpDtoReq.setNickname("testuser");
-        signUpDtoReq.setPassword("password123");
-        signUpDtoReq.setRole("USER");
+        SignUpDtoRequest signUpDtoRequest = new SignUpDtoRequest();
+        signUpDtoRequest.setEmail("test@example.com");
+        signUpDtoRequest.setName("Test User");
+        signUpDtoRequest.setNickname("testuser");
+        signUpDtoRequest.setPassword("password123");
+        signUpDtoRequest.setRole("USER");
 
         User user = User.builder()
-                .email(signUpDtoReq.getEmail())
+                .email(signUpDtoRequest.getEmail())
                 .role(Role.USER)
-                .name(signUpDtoReq.getName())
-                .nickname(signUpDtoReq.getNickname())
+                .name(signUpDtoRequest.getName())
+                .nickname(signUpDtoRequest.getNickname())
                 .password("encodedPassword")
                 .build();
 
         when(passwordEncoder.encode(any(String.class))).thenReturn("encodedPassword");
         when(userRepository.save(any(User.class))).thenReturn(user);
 
-        User createdUser = userService.signUp(signUpDtoReq);
+        User createdUser = userService.signUp(signUpDtoRequest);
 
         assertNotNull(createdUser);
     }

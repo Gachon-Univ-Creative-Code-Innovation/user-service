@@ -13,7 +13,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class SignUpDtoReqTest {
+public class SignUpDtoRequestTest {
 
     private static Validator validator;
 
@@ -25,41 +25,41 @@ public class SignUpDtoReqTest {
 
     @Test
     void validSignUpDtoReq() {
-        SignUpDtoReq dto = new SignUpDtoReq();
+        SignUpDtoRequest dto = new SignUpDtoRequest();
         dto.setEmail("test@example.com");
         dto.setName("John Doe");
         dto.setPassword("password123");
         dto.setNickname("johndoe");
         dto.setRole("USER");
 
-        Set<ConstraintViolation<SignUpDtoReq>> violations = validator.validate(dto);
+        Set<ConstraintViolation<SignUpDtoRequest>> violations = validator.validate(dto);
         assertEquals(0, violations.size());
     }
 
     @Test
     void invalidEmailFormat() {
-        SignUpDtoReq dto = new SignUpDtoReq();
+        SignUpDtoRequest dto = new SignUpDtoRequest();
         dto.setEmail("invalid-email");
         dto.setName("John Doe");
         dto.setPassword("password123");
         dto.setNickname("johndoe");
         dto.setRole("USER");
 
-        Set<ConstraintViolation<SignUpDtoReq>> violations = validator.validate(dto);
+        Set<ConstraintViolation<SignUpDtoRequest>> violations = validator.validate(dto);
         assertEquals(1, violations.size());
     }
 
 
     @Test
     void blankName() {
-        SignUpDtoReq dto = new SignUpDtoReq();
+        SignUpDtoRequest dto = new SignUpDtoRequest();
         dto.setEmail("test@example.com");
         dto.setName(""); // blank
         dto.setPassword("password123");
         dto.setNickname("johndoe");
         dto.setRole("USER");
 
-        Set<ConstraintViolation<SignUpDtoReq>> violations = validator.validate(dto);
+        Set<ConstraintViolation<SignUpDtoRequest>> violations = validator.validate(dto);
 
         // 1. name 필드에 대한 violation만 필터링
         List<String> nameViolationMessages = violations.stream()
@@ -75,27 +75,27 @@ public class SignUpDtoReqTest {
 
     @Test
     void shortPassword() {
-        SignUpDtoReq dto = new SignUpDtoReq();
+        SignUpDtoRequest dto = new SignUpDtoRequest();
         dto.setEmail("test@example.com");
         dto.setName("John Doe");
         dto.setPassword("short");
         dto.setNickname("johndoe");
         dto.setRole("USER");
 
-        Set<ConstraintViolation<SignUpDtoReq>> violations = validator.validate(dto);
+        Set<ConstraintViolation<SignUpDtoRequest>> violations = validator.validate(dto);
         assertEquals(1, violations.size());
     }
 
     @Test
     void blankNickname() {
-        SignUpDtoReq dto = new SignUpDtoReq();
+        SignUpDtoRequest dto = new SignUpDtoRequest();
         dto.setEmail("test@example.com");
         dto.setName("John Doe");
         dto.setPassword("password123");
         dto.setNickname("");
         dto.setRole("USER");
 
-        Set<ConstraintViolation<SignUpDtoReq>> violations = validator.validate(dto);
+        Set<ConstraintViolation<SignUpDtoRequest>> violations = validator.validate(dto);
 
         List<String> nicknameViolationMessages = violations.stream()
                 .filter(v -> v.getPropertyPath().toString().equals("nickname"))
@@ -109,14 +109,14 @@ public class SignUpDtoReqTest {
 
     @Test
     void invalidRole() {
-        SignUpDtoReq dto = new SignUpDtoReq();
+        SignUpDtoRequest dto = new SignUpDtoRequest();
         dto.setEmail("test@example.com");
         dto.setName("John Doe");
         dto.setPassword("password123");
         dto.setNickname("johndoe");
         dto.setRole("INVALID_ROLE");
 
-        Set<ConstraintViolation<SignUpDtoReq>> violations = validator.validate(dto);
+        Set<ConstraintViolation<SignUpDtoRequest>> violations = validator.validate(dto);
         assertEquals(1, violations.size());
     }
 }

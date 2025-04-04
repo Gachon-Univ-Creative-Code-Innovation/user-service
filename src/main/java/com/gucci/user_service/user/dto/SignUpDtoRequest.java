@@ -11,7 +11,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class SignUpDtoReq {
+public class SignUpDtoRequest {
 
 
     @Email(message = "이메일 형식이 올바르지 않습니다.")

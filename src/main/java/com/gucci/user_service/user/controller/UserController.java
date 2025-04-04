@@ -2,24 +2,19 @@ package com.gucci.user_service.user.controller;
 
 import com.gucci.user_service.user.config.Response;
 import com.gucci.user_service.user.domain.User;
-import com.gucci.user_service.user.dto.SignUpDtoReq;
-import com.gucci.user_service.user.dto.SignUpDtoRes;
-import com.gucci.user_service.user.dto.VerifyCheckReq;
-import com.gucci.user_service.user.dto.VerifySendReq;
+import com.gucci.user_service.user.dto.SignUpDtoRequest;
+import com.gucci.user_service.user.dto.SignUpDtoResponse;
+import com.gucci.user_service.user.dto.VerifyCheckRequest;
+import com.gucci.user_service.user.dto.VerifySendRequest;
 import com.gucci.user_service.user.service.EmailVerificationService;
 import com.gucci.user_service.user.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Null;
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.regex.Pattern;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,16 +27,20 @@ public class UserController {
 
 
     @GetMapping("/health-check")
-    public String status(){
-        return "Working on port " + environment.getProperty("local.server.port");
+//    public ApiResponse<String> status(){
+    public ResponseEntity<Response<String>> status(){
+        String log = "Working on port " + environment.getProperty("local.server.port");
+        Response<String> response= new Response<>(200, "서버 상태 확인", log);
+//        return ApiResponse.success(SuccessCode.OK, log);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<Response<SignUpDtoRes>> signUp(@Valid @RequestBody SignUpDtoReq signUpDtoReq){
+    public ResponseEntity<Response<SignUpDtoResponse>> signUp(@Valid @RequestBody SignUpDtoRequest signUpDtoRequest){
 
-       User user = userService.signUp(signUpDtoReq);
-       SignUpDtoRes signUpDtoRes = new SignUpDtoRes(user.getUserId());
-       Response<SignUpDtoRes> response = new Response<>(201, user.getName()+"님 회원가입 완료", signUpDtoRes);
+       User user = userService.signUp(signUpDtoRequest);
+       SignUpDtoResponse signUpDtoResponse = new SignUpDtoResponse(user.getUserId());
+       Response<SignUpDtoResponse> response = new Response<>(201, user.getName()+"님 회원가입 완료", signUpDtoResponse);
 
        return ResponseEntity.status(response.getStatus()).body(response);
 
@@ -49,15 +48,7 @@ public class UserController {
 
     @GetMapping("/check-email/{email}")
     public ResponseEntity<Response<Boolean>> checkEmail(@PathVariable String email) {
-        if (email == null || email.isEmpty()) {
-            Response<Boolean> response = new Response<>(400, "이메일이 제공되지 않았습니다.", false);
-            return ResponseEntity.status(response.getStatus()).body(response);
-        }
-        if (!StringUtils.hasText(email)) {
 
-            Response<Boolean> response = new Response<>(400, "잘못된 이메일 형식입니다.", false);
-            return ResponseEntity.status(response.getStatus()).body(response);
-        }
         boolean isDuplicated = userService.isEmailDuplicated(email);
         Response<Boolean> response = new Response<>(200, "이메일 중복 확인", isDuplicated);
 
@@ -65,24 +56,20 @@ public class UserController {
     }
 
     @PostMapping("/verify/send")
-    public ResponseEntity<Response<Null>> sendCode(@Valid @RequestBody VerifySendReq verifySendReq) {
+    public ResponseEntity<Response<Null>> sendCode(@Valid @RequestBody VerifySendRequest verifySendRequest) {
 
-        emailService.sendVerificationCode(verifySendReq.getEmail());
+        emailService.sendVerificationCode(verifySendRequest.getEmail());
         Response<Null> response = new Response<>(200, "인증 코드가 전송되었습니다.", null);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @PostMapping("/verify/check")
-    public ResponseEntity<Response<String>> verifyCode(@Valid @RequestBody VerifyCheckReq verifyCheckReq) {
-        boolean isValid = emailService.verifyCode(verifyCheckReq.getEmail(), verifyCheckReq.getCode());
+    public ResponseEntity<Response<String>> verifyCode(@Valid @RequestBody VerifyCheckRequest verifyCheckRequest) {
+        boolean isValid = emailService.verifyCode(verifyCheckRequest.getEmail(), verifyCheckRequest.getCode());
         Response<String> response = new Response<>(200, "이메일 인증 성공", null);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-//    private boolean isValidEmail(String email) {
-//        String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
-//        Pattern pattern = Pattern.compile(emailRegex);
-//        return pattern.matcher(email).matches();
-//    }
+
 
 }

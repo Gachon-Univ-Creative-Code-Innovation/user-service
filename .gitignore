@@ -20,7 +20,7 @@ src/main/resources/application*.yml
 
 
 # Env
-.env
+src/main/resources/.env
 .env.*
 
 # Docker

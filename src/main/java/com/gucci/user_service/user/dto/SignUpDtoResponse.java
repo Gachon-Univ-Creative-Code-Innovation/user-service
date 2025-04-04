@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class SignUpDtoRes {
+public class SignUpDtoResponse {
     private long UserId;
 }
