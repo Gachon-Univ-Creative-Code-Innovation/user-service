@@ -8,17 +8,18 @@
 .gradle/
 build/
 !gradle/wrapper/gradle-wrapper.jar
-
+# .gitignore
+src/main/resources/application.yml
 # IntelliJ
 .idea/
 *.iml
-
+.env
 # OS
 .DS_Store
 
 
 # Env
-.env
+src/main/resources/.env
 .env.*
 
 # Docker
