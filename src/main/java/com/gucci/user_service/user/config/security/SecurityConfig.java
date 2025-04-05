@@ -45,8 +45,8 @@ public class SecurityConfig {
                                         "/api/user/check-email/**",
                                         "/api/user/signin",
                                         "/api/user/verify/**",
-                                        "/member/google/login",
-                                        "/member/kakao/login"
+                                        "/api/user/google/login",
+                                        "/api/user/kakao/login"
                                 )
                                 .permitAll()
                                 .anyRequest()
