@@ -39,4 +39,14 @@ spring:
     import: optional:.env[.properties]
 jwt:
   secret: ${JWT_SECRET}
-  expiration: 3000 #분단위
+  access-expiration: 60      # 1시간
+  refresh-expiration: 3000   # 50시간
+
+oauth:
+  google:
+    client-id: ${GOOGLE_CLIENT_ID}
+    client-secret: ${GOOGLE_CLIENT_SECRET}
+    redirect-uri: http://localhost:3000/oauth/google/redirect
+  kakao:
+    client-id: ${KAKAO_CLIENT_ID}
+    redirect-uri: http://localhost:3000/oauth/kakao/redirect

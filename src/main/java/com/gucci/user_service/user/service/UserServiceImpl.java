@@ -2,7 +2,9 @@ package com.gucci.user_service.user.service;
 
 import com.gucci.user_service.user.config.Response;
 import com.gucci.user_service.user.domain.Role;
+import com.gucci.user_service.user.domain.SocialType;
 import com.gucci.user_service.user.domain.User;
+import com.gucci.user_service.user.dto.LoginDtoRequest;
 import com.gucci.user_service.user.dto.SignUpDtoRequest;
 import com.gucci.user_service.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -12,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Service
@@ -49,5 +53,40 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("잘못된 이메일 형식입니다.");
         }
         return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public User login(LoginDtoRequest loginDTORequest) {
+        Optional<User> optUser = userRepository.findByEmail(loginDTORequest.getEmail());
+        if(!optUser.isPresent()){
+            throw new IllegalArgumentException("이메일을 확인해주세요.");
+        }
+        User user = optUser.get();
+        if(!passwordEncoder.matches(loginDTORequest.getPassword(), user.getPassword())){
+            throw new IllegalArgumentException("비밀번호가 올바르지 않습니다.");
+        }
+        return user;
+
+    }
+
+    @Override
+    public User getUserBySocialId(String socialId) {
+        User user = userRepository.findBySocialId(socialId).orElse(null);
+        return user;
+    }
+
+    @Override
+    public User createOauth(String socialId, String email, String name,SocialType socialType, String profileUrl) {
+        User user = User.builder()
+                .email(email)
+                .name(name)
+                .socialType(socialType)
+                .socialId(socialId)
+                .profileUrl(profileUrl)
+                .role(Role.USER)
+                .build();
+
+
+        return userRepository.save(user);
     }
 }
