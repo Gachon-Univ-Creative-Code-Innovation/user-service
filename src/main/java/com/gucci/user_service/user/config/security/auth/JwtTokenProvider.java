@@ -10,35 +10,57 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.util.Date;
 
+
 @Component
 public class JwtTokenProvider {
 
     private final String secretKey;
-    private final int expiration;
-    private Key SECRET_KEY;
+    private final int accessExpiration;     // 분 단위
+    private final int refreshExpiration;    // 분 단위
+    private final Key SECRET_KEY;
 
-    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey, @Value("${jwt.expiration}") int expiration) {
+    public JwtTokenProvider(
+            @Value("${jwt.secret}") String secretKey,
+            @Value("${jwt.access-expiration}") int accessExpiration,
+            @Value("${jwt.refresh-expiration}") int refreshExpiration
+    ) {
         this.secretKey = secretKey;
-        this.expiration = expiration;
+        this.accessExpiration = accessExpiration;
+        this.refreshExpiration = refreshExpiration;
         this.SECRET_KEY = new SecretKeySpec(
                 java.util.Base64.getDecoder().decode(secretKey),
                 SignatureAlgorithm.HS512.getJcaName()
         );
-
     }
-    public String createToken(String email, Long userId, String role) {
-        // Claims is the payload of the JWT token
+    // Access Token
+    public String createAccessToken(String email, Long userId, String role) {
         Claims claims = Jwts.claims().setSubject(email);
         claims.put("user_id", userId);
         claims.put("role", role);
         Date now = new Date();
-        String token = Jwts.builder()
+        return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + expiration * 60 * 1000L))
+                .setExpiration(new Date(now.getTime() + accessExpiration * 60 * 1000L))
                 .signWith(SECRET_KEY)
                 .compact();
-        return token;
+    }
+
+    // Refresh Token
+    public String createRefreshToken(String email, Long userId, String role) {
+        Claims claims = Jwts.claims().setSubject(email);
+        claims.put("user_id", userId);
+        claims.put("role", role);
+        Date now = new Date();
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + refreshExpiration * 60 * 1000L))
+                .signWith(SECRET_KEY)
+                .compact();
+    }
+    public int getRefreshExpiration() {
+        return refreshExpiration;
     }
 
     public Claims extractClaims(String token) {
