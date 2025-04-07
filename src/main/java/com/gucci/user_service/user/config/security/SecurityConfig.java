@@ -40,13 +40,16 @@ public class SecurityConfig {
                 //특정 url 패턴에 대해서는 인증처리(Authentication)를 제외
                 .authorizeHttpRequests(
                         a->a.requestMatchers(
-                                        "/api/user/signup",
-                                        "/api/user/health-check",
-                                        "/api/user/check-email/**",
-                                        "/api/user/signin",
-                                        "/api/user/verify/**",
-                                        "/api/user/google/login",
-                                        "/api/user/kakao/login"
+                                        "/api/user-service/signup",
+                                        "/api/user-service/health-check",
+                                        "/api/user-service/check-email/**",
+                                        "/api/user-service/signin",
+                                        "/api/user-service/verify/**",
+                                        "/api/user-service/google/login",
+                                        "/api/user-service/kakao/login",
+                                        "/swagger-ui.html",
+                                        "/swagger-ui/**",
+                                        "/v3/api-docs/**"
                                 )
                                 .permitAll()
                                 .anyRequest()

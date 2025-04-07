@@ -40,6 +40,15 @@ public class GlobalExceptionHandler {
         );
     }
 
+    // 🔹 NotFoundException (사용자를 찾을 수 없는 경우)
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFound(NotFoundException e) {
+        return new ResponseEntity<>(
+                new ErrorResponse(404, e.getMessage(), null),
+                HttpStatus.NOT_FOUND
+        );
+    }
+
     // 🔹 NoResourceFoundException (리소스를 찾을 수 없는 경우)
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ErrorResponse> handleNoResourceFound(NoResourceFoundException e) {
