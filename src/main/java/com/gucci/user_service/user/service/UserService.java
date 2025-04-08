@@ -14,6 +14,7 @@ public interface UserService {
 
     User login(LoginDtoRequest loginDTORequest);
 
+    Boolean isNicknameDuplicated(String nickname);
     public User getUserBySocialId(String socialId);
     public User createOauth(String socialId, String email, String name,SocialType socialType, String profileUrl);
     }

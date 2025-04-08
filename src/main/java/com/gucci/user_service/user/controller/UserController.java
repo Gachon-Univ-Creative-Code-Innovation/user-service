@@ -57,6 +57,13 @@ public class UserController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @GetMapping("/check-nickname/{nickname}")
+    public ResponseEntity<Response<Boolean>> checkNickname(@PathVariable String nickname) {
+        boolean isDuplicated = userService.isNicknameDuplicated(nickname);
+        Response<Boolean> response = new Response<>(200, "닉네임 중복 확인", isDuplicated);
+
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
     @PostMapping("/verify/send")
     public ResponseEntity<Response<Null>> sendCode(@Valid @RequestBody VerifySendRequest verifySendRequest) {
 

@@ -89,4 +89,17 @@ public class UserServiceImpl implements UserService {
 
         return userRepository.save(user);
     }
+
+    @Override
+    public Boolean isNicknameDuplicated(String nickname) {
+        if (nickname == null || nickname.isEmpty()) {
+            throw new IllegalArgumentException("닉네임이 제공되지 않았습니다.");
+        }
+        if (nickname.length() < 2 || nickname.length() > 20) {
+            throw new IllegalArgumentException("닉네임은 2~20자 사이여야 합니다.");
+        }
+
+
+        return userRepository.existsByNickname(nickname);
+    }
 }
