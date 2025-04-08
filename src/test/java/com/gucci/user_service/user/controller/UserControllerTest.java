@@ -1,13 +1,13 @@
 package com.gucci.user_service.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gucci.user_service.user.config.security.auth.JwtTokenProvider;
 import com.gucci.user_service.user.domain.Role;
 import com.gucci.user_service.user.domain.User;
 import com.gucci.user_service.user.dto.SignUpDtoRequest;
 import com.gucci.user_service.user.dto.VerifyCheckRequest;
 import com.gucci.user_service.user.dto.VerifySendRequest;
-import com.gucci.user_service.user.service.EmailVerificationService;
-import com.gucci.user_service.user.service.UserService;
+import com.gucci.user_service.user.service.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -16,6 +16,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
+import org.springframework.mock.env.MockEnvironment;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
@@ -26,9 +29,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(UserController.class)
-@Import(UserControllerTest.TestConfig.class)
 @AutoConfigureMockMvc(addFilters = false)
+@Import(UserControllerTest.TestConfig.class)
+@ActiveProfiles("test") // <- 추가
 class UserControllerTest {
+
+
 
     @Autowired
     private MockMvc mockMvc;
@@ -53,10 +59,36 @@ class UserControllerTest {
         public EmailVerificationService emailVerificationService() {
             return Mockito.mock(EmailVerificationService.class);
         }
+
+        @Bean
+        public JwtTokenProvider jwtTokenProvider() {
+            return Mockito.mock(JwtTokenProvider.class);
+        }
+
+        @Bean
+        public TokenService tokenService() {
+            return Mockito.mock(TokenService.class);
+        }
+
+        @Bean
+        public GoogleService googleService() {
+            return Mockito.mock(GoogleService.class);
+        }
+
+        @Bean
+        public KakaoService kakaoService() {
+            return Mockito.mock(KakaoService.class);
+        }
+
+        @Bean
+        public Environment environment() {
+            return new MockEnvironment()
+                    .withProperty("spring.aop.proxy-target-class", "true"); // <-- 핵심!
+        }
     }
 
     @Nested
-    @DisplayName("회원가입 API (/api/user/signup)")
+    @DisplayName("회원가입 API (/api/user-service/signup)")
     class SignUpTests {
 
         @Test
@@ -83,7 +115,7 @@ class UserControllerTest {
                     .thenReturn(savedUser);
 
             // when & then
-            mockMvc.perform(post("/api/user/signup")
+            mockMvc.perform(post("/api/user-service/signup")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isCreated())
@@ -105,7 +137,7 @@ class UserControllerTest {
             request.setRole("USER");
 
             // when & then
-            mockMvc.perform(post("/api/user/signup")
+            mockMvc.perform(post("/api/user-service/signup")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest());
@@ -118,7 +150,7 @@ class UserControllerTest {
             SignUpDtoRequest request = new SignUpDtoRequest(); // 아무 값도 없음
 
             // when & then
-            mockMvc.perform(post("/api/user/signup")
+            mockMvc.perform(post("/api/user-service/signup")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest());
@@ -126,12 +158,12 @@ class UserControllerTest {
     }
 
     @Nested
-    @DisplayName("헬스 체크 API (/api/user/health-check)")
+    @DisplayName("헬스 체크 API (/api/user-service/health-check)")
     class HealthCheckTests {
         @Test
         @DisplayName("성공: 서비스가 실행 중일 때 200 응답")
         void healthCheck() throws Exception {
-            mockMvc.perform(get("/api/user/health-check"))
+            mockMvc.perform(get("/api/user-service/health-check"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value(200))
                     .andExpect(jsonPath("$.message").exists())
@@ -140,7 +172,7 @@ class UserControllerTest {
     }
 
     @Nested
-    @DisplayName("이메일 중복 확인 API (/api/user/check-email/{email})")
+    @DisplayName("이메일 중복 확인 API (/api/user-service/check-email/{email})")
     class EmailCheckTests {
 
         @Test
@@ -149,7 +181,7 @@ class UserControllerTest {
             String email = "unique@example.com";
             Mockito.when(userService.isEmailDuplicated(email)).thenReturn(false);
 
-            mockMvc.perform(get("/api/user/check-email/" + email))
+            mockMvc.perform(get("/api/user-service/check-email/" + email))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value(200))
                     .andExpect(jsonPath("$.message").value("이메일 중복 확인"))
@@ -162,7 +194,7 @@ class UserControllerTest {
             String email = "duplicate@example.com";
             Mockito.when(userService.isEmailDuplicated(email)).thenReturn(true);
 
-            mockMvc.perform(get("/api/user/check-email/" + email))
+            mockMvc.perform(get("/api/user-service/check-email/" + email))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value(200))
                     .andExpect(jsonPath("$.message").value("이메일 중복 확인"))
@@ -171,7 +203,7 @@ class UserControllerTest {
     }
 
     @Nested
-    @DisplayName("인증코드 전송 API (/api/user/verify/send)")
+    @DisplayName("인증코드 전송 API (/api/user-service/verify/send)")
     class SendVerificationCodeTests {
 
         @Test
@@ -179,7 +211,7 @@ class UserControllerTest {
         void sendVerificationCodeSuccess() throws Exception {
             VerifySendRequest request = new VerifySendRequest("test@example.com");
 
-            mockMvc.perform(post("/api/user/verify/send")
+            mockMvc.perform(post("/api/user-service/verify/send")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isOk())
@@ -193,7 +225,7 @@ class UserControllerTest {
         void sendVerificationCodeInvalidEmail() throws Exception {
             VerifySendRequest request = new VerifySendRequest("invalid-email");
 
-            mockMvc.perform(post("/api/user/verify/send")
+            mockMvc.perform(post("/api/user-service/verify/send")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest());
@@ -201,7 +233,7 @@ class UserControllerTest {
     }
 
     @Nested
-    @DisplayName("인증코드 확인 API (/api/user/verify/check)")
+    @DisplayName("인증코드 확인 API (/api/user-service/verify/check)")
     class CheckVerificationCodeTests {
 
         @Test
@@ -210,7 +242,7 @@ class UserControllerTest {
             VerifyCheckRequest request = new VerifyCheckRequest("test@example.com", "123456");
             Mockito.when(emailVerificationService.verifyCode("test@example.com", "123456")).thenReturn(true);
 
-            mockMvc.perform(post("/api/user/verify/check")
+            mockMvc.perform(post("/api/user-service/verify/check")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isOk())
@@ -224,7 +256,7 @@ class UserControllerTest {
         void verifyCodeInvalidRequest() throws Exception {
             VerifyCheckRequest request = new VerifyCheckRequest("invalid-email", ""); // invalid
 
-            mockMvc.perform(post("/api/user/verify/check")
+            mockMvc.perform(post("/api/user-service/verify/check")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest());

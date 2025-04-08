@@ -20,7 +20,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/api/user")
+@RequestMapping("/api/user-service")
 public class UserController {
     private final UserService userService;
     private final Environment environment;
@@ -183,6 +183,11 @@ public class UserController {
 
 
 
+    }
+
+    @GetMapping("/test")
+    public String test(){
+        return "토큰 인증 성공";
     }
 
 }
