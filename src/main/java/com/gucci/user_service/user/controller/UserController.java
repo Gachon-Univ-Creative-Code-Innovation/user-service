@@ -31,11 +31,9 @@ public class UserController {
     private final KakaoService kakaoService;
 
     @GetMapping("/health-check")
-//    public ApiResponse<String> status(){
     public ResponseEntity<Response<String>> status(){
         String log = "Working on port " + environment.getProperty("local.server.port");
         Response<String> response= new Response<>(200, "서버 상태 확인", log);
-//        return ApiResponse.success(SuccessCode.OK, log);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
