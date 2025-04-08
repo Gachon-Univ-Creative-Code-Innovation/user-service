@@ -1,6 +1,7 @@
 package com.gucci.user_service.user.controller;
 
 import com.gucci.user_service.user.config.Response;
+import com.gucci.user_service.user.config.error.TokenMissingException;
 import com.gucci.user_service.user.config.security.auth.JwtTokenProvider;
 import com.gucci.user_service.user.domain.SocialType;
 import com.gucci.user_service.user.domain.User;
@@ -183,22 +184,26 @@ public class UserController {
 
     }
     @PostMapping("/refresh-token")
-    public ResponseEntity<Response<LoginDtoResponse>> refreshAccessToken(@RequestBody RefreshTokenDto refreshTokenDto) {
-        String refreshToken = refreshTokenDto.getRefreshToken();
+    public ResponseEntity<Response<AccessTokenDtoResponse>> refreshAccessToken(@RequestBody RefreshTokenDtoRequest refreshTokenDtoRequest) {
+        String refreshToken = refreshTokenDtoRequest.getRefreshToken();
         Long userId = jwtTokenProvider.getUserIdFromToken(refreshToken);
 
         if(tokenService.isValidRefreshToken(refreshToken, userId)){
 
             String accessToken = jwtTokenProvider.createAccessToken(
-                    jwtTokenProvider.getEmailFromToken(refreshToken,
+                    jwtTokenProvider.getEmailFromToken(refreshToken),
                     userId,
-                    jwtTokenProvider.getRoleFromToken(refreshTokenDto.getRefreshToken())
+                    jwtTokenProvider.getRoleFromToken(refreshTokenDtoRequest.getRefreshToken())
             );
 
-            tokenService.saveRefreshToken(userId, refreshToken, jwtTokenProvider.getRefreshExpiration());
 
-            Response<LoginDtoResponse> response = new Response<>(200, "Access Token 재발급 성공", new LoginDtoResponse(accessToken, refreshToken));
+            Response<AccessTokenDtoResponse> response = new Response<>(
+                    200,
+                    "Access Token 재발급 성공",
+                    new AccessTokenDtoResponse(accessToken));
             return ResponseEntity.status(response.getStatus()).body(response);
+        }else {
+            throw new TokenMissingException("RefreshToken이 유효하지 않습니다.");
         }
     }
 

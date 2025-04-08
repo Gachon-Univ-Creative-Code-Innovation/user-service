@@ -47,6 +47,7 @@ public class SecurityConfig {
                                         "/api/user-service/verify/**",
                                         "/api/user-service/google/login",
                                         "/api/user-service/kakao/login",
+                                        "/api/user-service/refresh-token",
                                         "/swagger-ui.html",
                                         "/swagger-ui/**",
                                         "/v3/api-docs/**"

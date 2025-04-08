@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @Valid
-public class RefreshTokenDto {
+public class RefreshTokenDtoRequest {
 
     @NotBlank(message = "RefreshToken은 필수 값입니다.")
     private String refreshToken;
