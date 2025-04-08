@@ -184,5 +184,27 @@ public class UserController {
 
 
     }
+    @PostMapping("/refresh-token")
+    public ResponseEntity<Response<LoginDtoResponse>> refreshAccessToken(@RequestBody RefreshTokenDto refreshTokenDto) {
+        String refreshToken = refreshTokenDto.getRefreshToken();
+        Long userId = jwtTokenProvider.getUserIdFromToken(refreshToken);
+
+        if(tokenService.isValidRefreshToken(refreshToken, userId)){
+
+            String accessToken = jwtTokenProvider.createAccessToken(
+                    jwtTokenProvider.getEmailFromToken(refreshToken,
+                    userId,
+                    jwtTokenProvider.getRoleFromToken(refreshTokenDto.getRefreshToken())
+            );
+
+            tokenService.saveRefreshToken(userId, refreshToken, jwtTokenProvider.getRefreshExpiration());
+
+            Response<LoginDtoResponse> response = new Response<>(200, "Access Token 재발급 성공", new LoginDtoResponse(accessToken, refreshToken));
+            return ResponseEntity.status(response.getStatus()).body(response);
+        }
+    }
+
+
+
 
 }
