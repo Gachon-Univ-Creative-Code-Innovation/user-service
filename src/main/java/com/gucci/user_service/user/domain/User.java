@@ -27,6 +27,7 @@
         @Column(nullable = false)
         private String name;
 
+
         private String nickname;
 
         private String profileUrl;
