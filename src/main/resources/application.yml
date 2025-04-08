@@ -50,3 +50,6 @@ oauth:
   kakao:
     client-id: ${KAKAO_CLIENT_ID}
     redirect-uri: http://localhost:3000/oauth/kakao/redirect
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

@@ -20,7 +20,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/api/user")
+@RequestMapping("/api/user-service")
 public class UserController {
     private final UserService userService;
     private final Environment environment;
@@ -31,11 +31,9 @@ public class UserController {
     private final KakaoService kakaoService;
 
     @GetMapping("/health-check")
-//    public ApiResponse<String> status(){
     public ResponseEntity<Response<String>> status(){
         String log = "Working on port " + environment.getProperty("local.server.port");
         Response<String> response= new Response<>(200, "서버 상태 확인", log);
-//        return ApiResponse.success(SuccessCode.OK, log);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
@@ -206,5 +204,10 @@ public class UserController {
 
 
 
+
+    @GetMapping("/test")
+    public String test(){
+        return "토큰 인증 성공";
+    }
 
 }

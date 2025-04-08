@@ -45,7 +45,7 @@ class SignUpIntegrationTest {
         request.setPassword("securePassword123");
         request.setRole("USER");
 
-        String url = "http://localhost:" + port + "/api/user/signup";
+        String url = "http://localhost:" + port + "/api/user-service/signup";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
