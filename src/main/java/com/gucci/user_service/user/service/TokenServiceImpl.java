@@ -1,5 +1,6 @@
 package com.gucci.user_service.user.service;
 
+import com.gucci.user_service.user.config.security.auth.JwtTokenProvider;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,8 @@ public class TokenServiceImpl implements TokenService {
     private final RedisTemplate<String, String> redisTemplate;
 
     private static final String REFRESH_TOKEN_PREFIX = "refresh:token:";
+    private final JwtTokenProvider jwtTokenProvider;
+
     @Override
     public void saveRefreshToken(Long userId, String refreshToken, long expirationMinutes) {
        String key = REFRESH_TOKEN_PREFIX + userId;
@@ -41,5 +44,17 @@ public class TokenServiceImpl implements TokenService {
     public boolean validateRefreshToken(Long userId, String token) {
         String stored = getRefreshToken(userId);
         return stored != null && stored.equals(token);
+    }
+
+    @Override
+    public boolean isValidRefreshToken(String refreshToken, Long userId) {
+        // Redis에서 모든 키를 검색하여 refreshToken이 존재하는지 확인
+        String refreshTokenFromRedis = getRefreshToken(userId);
+
+
+
+        return refreshTokenFromRedis != null && refreshTokenFromRedis.equals(refreshToken);
+
+
     }
 }

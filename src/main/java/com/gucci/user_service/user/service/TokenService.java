@@ -5,4 +5,5 @@ public interface TokenService {
     public String getRefreshToken(Long userId);
     public void deleteRefreshToken(Long userId);
     public boolean validateRefreshToken(Long userId, String token);
+    public boolean isValidRefreshToken(String refreshToken, Long userId);
     }
