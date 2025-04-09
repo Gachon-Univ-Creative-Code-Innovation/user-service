@@ -58,6 +58,13 @@ public class UserController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @GetMapping("/check-nickname/{nickname}")
+    public ResponseEntity<Response<Boolean>> checkNickname(@PathVariable String nickname) {
+        boolean isDuplicated = userService.isNicknameDuplicated(nickname);
+        Response<Boolean> response = new Response<>(200, "닉네임 중복 확인", isDuplicated);
+
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
     @PostMapping("/verify/send")
     public ResponseEntity<Response<Null>> sendCode(@Valid @RequestBody VerifySendRequest verifySendRequest) {
 
@@ -92,7 +99,7 @@ public class UserController {
         tokenService.saveRefreshToken(user.getUserId(), refreshToken, jwtTokenProvider.getRefreshExpiration());
 
 
-        Response<LoginDtoResponse> response = new Response<>(201, "로그인 성공", new LoginDtoResponse(accessToken, refreshToken));
+        Response<LoginDtoResponse> response = new Response<>(201, "로그인 성공", new LoginDtoResponse(accessToken, refreshToken, false));
 
         return ResponseEntity.status(response.getStatus()).body(response);
 
@@ -104,6 +111,7 @@ public class UserController {
         //accessToken 발급
         AccessTokenDto accessTokenDto = googleService.getAccessToken(redirectDto.getCode());
 
+        boolean isNewUser = false;
 
         //사용자 정보 얻기
         GoogleProfileDto googleProfileDto = googleService.getProfile(accessTokenDto.getAccess_token());
@@ -111,6 +119,7 @@ public class UserController {
         //회원가입이 되어 있지 않다면 회원가입 시키기
         User originalMember = userService.getUserBySocialId(googleProfileDto.getSub());
         if(originalMember == null){
+            isNewUser = true;
             originalMember = userService.createOauth(
                     googleProfileDto.getSub(),
                     googleProfileDto.getEmail(),
@@ -135,7 +144,7 @@ public class UserController {
 
 
         Response<LoginDtoResponse> response = new Response<>(
-                200, "로그인 성공", new LoginDtoResponse(accessToken, refreshToken)
+                200, "로그인 성공", new LoginDtoResponse(accessToken, refreshToken, isNewUser)
         );
 
         return ResponseEntity.status(response.getStatus()).body(response);
@@ -144,11 +153,13 @@ public class UserController {
 
     @PostMapping("/kakao/login")
     public ResponseEntity<?>kakaoLogin(@RequestBody RedirectDto redirectDto){
+        boolean isNewUser = false;
         //accessToken 발급
         AccessTokenDto accessTokenDto = kakaoService.getAccessToken(redirectDto.getCode());
         KakaoProfileDto kakaoProfileDto = kakaoService.getKakaoProfile(accessTokenDto.getAccess_token());
         User originalMember = userService.getUserBySocialId(kakaoProfileDto.getId());
         if(originalMember == null){
+            isNewUser = true;
             originalMember =
                     userService
                             .createOauth(
@@ -175,7 +186,7 @@ public class UserController {
         tokenService.saveRefreshToken(originalMember.getUserId(), refreshToken, jwtTokenProvider.getRefreshExpiration());
 
         Response<LoginDtoResponse> response = new Response<>(
-                200, "로그인 성공", new LoginDtoResponse(accessToken, refreshToken)
+                200, "로그인 성공", new LoginDtoResponse(accessToken, refreshToken, isNewUser)
         );
 
         return ResponseEntity.status(response.getStatus()).body(response);

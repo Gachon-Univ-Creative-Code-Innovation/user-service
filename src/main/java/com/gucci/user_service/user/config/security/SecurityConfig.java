@@ -43,6 +43,7 @@ public class SecurityConfig {
                                         "/api/user-service/signup",
                                         "/api/user-service/health-check",
                                         "/api/user-service/check-email/**",
+                                        "/api/user-service/check-nickname/**",
                                         "/api/user-service/signin",
                                         "/api/user-service/verify/**",
                                         "/api/user-service/google/login",
