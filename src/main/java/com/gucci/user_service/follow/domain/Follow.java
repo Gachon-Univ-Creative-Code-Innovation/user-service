@@ -1,5 +1,6 @@
-package com.gucci.user_service.user.domain;
+package com.gucci.user_service.follow.domain;
 
+import com.gucci.user_service.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
 

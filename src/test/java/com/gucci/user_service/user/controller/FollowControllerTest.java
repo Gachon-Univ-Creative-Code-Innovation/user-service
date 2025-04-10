@@ -1,11 +1,11 @@
 package com.gucci.user_service.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gucci.user_service.user.config.Response;
+import com.gucci.user_service.follow.controller.FollowController;
 import com.gucci.user_service.user.config.error.GlobalExceptionHandler;
 import com.gucci.user_service.user.config.security.auth.JwtTokenProvider;
-import com.gucci.user_service.user.dto.FollowDtoRequest;
-import com.gucci.user_service.user.service.FollowService;
+import com.gucci.user_service.follow.dto.FollowDtoRequest;
+import com.gucci.user_service.follow.service.FollowService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

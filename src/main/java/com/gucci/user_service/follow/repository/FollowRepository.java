@@ -1,7 +1,7 @@
-package com.gucci.user_service.user.repository;
+package com.gucci.user_service.follow.repository;
 
-import com.gucci.user_service.user.domain.Follow;
-import com.gucci.user_service.user.domain.FollowId;
+import com.gucci.user_service.follow.domain.Follow;
+import com.gucci.user_service.follow.domain.FollowId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
