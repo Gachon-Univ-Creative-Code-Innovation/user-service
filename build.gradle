@@ -48,7 +48,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-	implementation 'com.github.Gachon-Univ-Creative-Code-Innovation:alog-common:v1.0.1'
+	implementation 'com.github.Gachon-Univ-Creative-Code-Innovation:alog-common:v1.0.2'
 	implementation 'org.springframework.kafka:spring-kafka'
 
 }
