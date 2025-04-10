@@ -1,10 +1,10 @@
-package com.gucci.user_service.user.service;
+package com.gucci.user_service.follow.service;
 
 import com.gucci.user_service.user.config.error.NotFoundException;
-import com.gucci.user_service.user.domain.Follow;
-import com.gucci.user_service.user.domain.FollowId;
+import com.gucci.user_service.follow.domain.Follow;
+import com.gucci.user_service.follow.domain.FollowId;
 import com.gucci.user_service.user.domain.User;
-import com.gucci.user_service.user.repository.FollowRepository;
+import com.gucci.user_service.follow.repository.FollowRepository;
 import com.gucci.user_service.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -66,17 +65,11 @@ public class FollowServiceImpl implements FollowService {
 
     @Override
     public List<Long> getFollowers(Long userId) {
-        return followRepository.findAll().stream()
-                .filter(follow -> follow.getFollowee().getUserId().equals(userId))
-                .map(follow -> follow.getFollower().getUserId())
-                .collect(Collectors.toList());
+        return followRepository.findFollowerIdsByFolloweeId(userId);
     }
 
     @Override
     public List<Long> getFollowees(Long userId) {
-        return followRepository.findAll().stream()
-                .filter(follow -> follow.getFollower().getUserId().equals(userId))
-                .map(follow -> follow.getFollowee().getUserId())
-                .collect(Collectors.toList());
+        return followRepository.findFolloweeIdsByFollowerId(userId);
     }
 }

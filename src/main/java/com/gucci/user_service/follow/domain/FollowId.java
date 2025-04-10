@@ -1,4 +1,4 @@
-package com.gucci.user_service.user.domain;
+package com.gucci.user_service.follow.domain;
 
 
 import jakarta.persistence.Embeddable;

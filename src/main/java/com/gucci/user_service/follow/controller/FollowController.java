@@ -1,9 +1,8 @@
-package com.gucci.user_service.user.controller;
+package com.gucci.user_service.follow.controller;
 
 import com.gucci.user_service.user.config.Response;
-import com.gucci.user_service.user.domain.Follow;
-import com.gucci.user_service.user.dto.FollowDtoRequest;
-import com.gucci.user_service.user.service.FollowService;
+import com.gucci.user_service.follow.dto.FollowDtoRequest;
+import com.gucci.user_service.follow.service.FollowService;
 import com.gucci.user_service.user.config.security.auth.JwtTokenProvider;
 import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.gucci.user_service.user.service;
+package com.gucci.user_service.follow.service;
 
 import java.util.List;
 

@@ -1,5 +1,6 @@
-package com.gucci.user_service.user.domain;
+package com.gucci.user_service.follow.domain;
 
+import com.gucci.user_service.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,7 +9,6 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "follow")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
