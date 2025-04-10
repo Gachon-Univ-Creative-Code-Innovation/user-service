@@ -8,7 +8,6 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "follow")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

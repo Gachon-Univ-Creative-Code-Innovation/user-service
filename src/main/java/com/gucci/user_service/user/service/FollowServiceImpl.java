@@ -66,17 +66,11 @@ public class FollowServiceImpl implements FollowService {
 
     @Override
     public List<Long> getFollowers(Long userId) {
-        return followRepository.findAll().stream()
-                .filter(follow -> follow.getFollowee().getUserId().equals(userId))
-                .map(follow -> follow.getFollower().getUserId())
-                .collect(Collectors.toList());
+        return followRepository.findFollowerIdsByFolloweeId(userId);
     }
 
     @Override
     public List<Long> getFollowees(Long userId) {
-        return followRepository.findAll().stream()
-                .filter(follow -> follow.getFollower().getUserId().equals(userId))
-                .map(follow -> follow.getFollowee().getUserId())
-                .collect(Collectors.toList());
+        return followRepository.findFolloweeIdsByFollowerId(userId);
     }
 }

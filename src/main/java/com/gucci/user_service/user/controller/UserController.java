@@ -204,7 +204,7 @@ public class UserController {
             String accessToken = jwtTokenProvider.createAccessToken(
                     jwtTokenProvider.getEmailFromToken(refreshToken),
                     userId,
-                    jwtTokenProvider.getRoleFromToken(refreshTokenDtoRequest.getRefreshToken())
+                    jwtTokenProvider.getRoleFromToken(refreshToken)
             );
 
 
