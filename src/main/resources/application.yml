@@ -1,3 +1,4 @@
+
 spring:
   mail:
     host: smtp.naver.com  # 또는 smtp.gmail.com
@@ -16,9 +17,10 @@ spring:
       host: localhost
       port: 6379
   datasource:
-    url: jdbc:postgresql://localhost:5432/devdb
-    username: devuser
-    password: ${POSTGRESQL_DB_PASSWORD}
+    url: ${LOCAL_DB_URL}
+    #    url: jdbc:postgresql://localhost:5432/devdb
+    username: ${LOCAL_DB_USERNAME}
+    password: ${LOCAL_DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -37,6 +39,15 @@ spring:
       org.hibernate.type.descriptor.sql.BasicBinder: trace
   config:
     import: optional:.env[.properties]
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+
 jwt:
   secret: ${JWT_SECRET}
   access-expiration: 60      # 1시간
@@ -53,3 +64,6 @@ oauth:
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
+
+server:
+  port: 8081

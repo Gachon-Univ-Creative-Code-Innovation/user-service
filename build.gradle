@@ -28,7 +28,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'io.github.cdimascio:dotenv-java:3.0.0'
+//	implementation 'io.github.cdimascio:dotenv-java:3.0.0'
+	implementation 'me.paulschwarz:spring-dotenv:3.0.0'
 
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6")
 
@@ -47,7 +48,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-	implementation 'com.github.Gachon-Univ-Creative-Code-Innovation:alog-common:v1.0.1'
+	implementation 'com.github.Gachon-Univ-Creative-Code-Innovation:alog-common:v1.0.2'
+	implementation 'org.springframework.kafka:spring-kafka'
 
 }
 

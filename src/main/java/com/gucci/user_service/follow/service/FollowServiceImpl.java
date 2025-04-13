@@ -1,5 +1,8 @@
 package com.gucci.user_service.follow.service;
 
+import com.gucci.user_service.kafka.domain.NotificationType;
+import com.gucci.user_service.kafka.dto.NotificationKafkaRequest;
+import com.gucci.user_service.kafka.producer.NotificationProducer;
 import com.gucci.user_service.user.config.error.NotFoundException;
 import com.gucci.user_service.follow.domain.Follow;
 import com.gucci.user_service.follow.domain.FollowId;
@@ -20,6 +23,7 @@ import java.util.List;
 public class FollowServiceImpl implements FollowService {
     private final FollowRepository followRepository;
     private final UserRepository userRepository;
+    private final NotificationProducer notificationProducer;
 
     @Override
     public void follow(Long followerId, Long followeeId) {
@@ -46,6 +50,15 @@ public class FollowServiceImpl implements FollowService {
                 .followee(followee)
                 .build();
         followRepository.save(follow);
+
+        //followeeId 가 알림을 받아야함
+        notificationProducer.sendNotification(NotificationKafkaRequest.builder()
+                .receiverId(followeeId)
+                .senderId(followerId)
+                .type(NotificationType.FOLLOW.getType())
+                .content(follower.getNickname() + NotificationType.FOLLOW.getMessage())
+                .targetUrl("/user/" + followerId) // 팔로워의 블로그 주소(임시 경로)
+                .build());
     }
 
     @Override
