@@ -64,7 +64,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+        corsConfiguration.setAllowedOrigins(Arrays.asList(
+                "http://localhost:3000",
+                "https://a-log.netlify.app"
+        ));
+
         corsConfiguration.setAllowedMethods(Arrays.asList("*"));//모든 메서드 허용
         corsConfiguration.setAllowedHeaders(Arrays.asList("*"));//모든 헤더값 허용
         corsConfiguration.setAllowCredentials(true);//자격증명 허용
