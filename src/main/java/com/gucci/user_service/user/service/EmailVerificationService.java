@@ -37,7 +37,7 @@ public class EmailVerificationService {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(email);
             message.setSubject("Email Verification Code");
-            message.setText("Verification code: " + code);
+            message.setText(createEmailContent(code));
 
             message.setFrom(fromAddress); // <- 여기 사용!
 
@@ -65,5 +65,19 @@ public class EmailVerificationService {
             throw new CustomException("Invalid verification code", 400);
         }
         return isValid;
+    }
+
+    // 이메일 본문 HTML을 생성
+    private String createEmailContent(String code) {
+        return String.format("""
+            <div style='text-align: center; margin: 30px;'>
+                <h3> AlOG </h3>
+                <h2>이메일 인증 코드</h2>
+                <p> 본 메일은 AlOG 회원가입을 위한 이메일 인증입니다.</p>
+                <p> 아래의 인증 코드를 입력하여 본인확인을 해주시기 바랍니다.</p>
+                <div style='font-size: 24px; font-weight: bold; margin: 20px;'>%s</div>
+                <p>이 코드는 5분 동안 유효합니다.</p>
+            </div>
+            """, code);
     }
 }
