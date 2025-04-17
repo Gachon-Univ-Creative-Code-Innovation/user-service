@@ -4,12 +4,14 @@ import com.gucci.user_service.user.config.error.CustomException;
 //import com.gucci.common.exception.CustomException;
 import com.gucci.common.exception.ErrorCode;
 import com.gucci.user_service.user.service.util.CodeGenerator;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -33,13 +35,14 @@ public class EmailVerificationService {
             String key = "email:verify:" + email;
             redisTemplate.opsForValue().set(key, code, Duration.ofMinutes(EXPIRATION_MINUTES));
 
-            // Send email
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(email);
-            message.setSubject("Email Verification Code");
-            message.setText(createEmailContent(code));
 
-            message.setFrom(fromAddress); // <- 여기 사용!
+            // 이메일 메시지 생성
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setTo(email);
+            helper.setSubject("[AlOG] 회원가입 인증번호 안내");
+            helper.setText(createEmailContent(code), true); // true는 HTML 형식 사용을 의미
+            helper.setFrom(fromAddress);
 
             mailSender.send(message);
             log.info("Verification code sent to {}", email);
