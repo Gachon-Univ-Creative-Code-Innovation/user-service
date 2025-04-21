@@ -33,10 +33,11 @@ public class JwtTokenProvider {
         );
     }
     // Access Token
-    public String createAccessToken(String email, Long userId, String role) {
+    public String createAccessToken(String email, Long userId, String role, String nickname) {
         Claims claims = Jwts.claims().setSubject(email);
         claims.put("user_id", userId);
         claims.put("role", role);
+        claims.put("nickname", nickname);
         Date now = new Date();
         return Jwts.builder()
                 .setClaims(claims)
@@ -47,10 +48,11 @@ public class JwtTokenProvider {
     }
 
     // Refresh Token
-    public String createRefreshToken(String email, Long userId, String role) {
+    public String createRefreshToken(String email, Long userId, String role, String nickname) {
         Claims claims = Jwts.claims().setSubject(email);
         claims.put("user_id", userId);
         claims.put("role", role);
+        claims.put("nickname", nickname);
         Date now = new Date();
         return Jwts.builder()
                 .setClaims(claims)
@@ -81,5 +83,9 @@ public class JwtTokenProvider {
 
     public String getRoleFromToken(String token) {
         return extractClaims(token).get("role", String.class);
+    }
+
+    public String getNicknameFromToken(String token) {
+        return extractClaims(token).get("nickname", String.class);
     }
 }

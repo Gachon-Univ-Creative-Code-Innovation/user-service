@@ -87,13 +87,15 @@ public class UserController {
         String accessToken = jwtTokenProvider.createAccessToken(
                 user.getEmail(),
                 user.getUserId(),
-                user.getRole().toString()
+                user.getRole().toString(),
+                user.getNickname()
         );
 
         String refreshToken = jwtTokenProvider.createRefreshToken(
                 user.getEmail(),
                 user.getUserId(),
-                user.getRole().toString()
+                user.getRole().toString(),
+                user.getNickname()
         );
 
         tokenService.saveRefreshToken(user.getUserId(), refreshToken, jwtTokenProvider.getRefreshExpiration());
@@ -132,12 +134,14 @@ public class UserController {
         String accessToken = jwtTokenProvider.createAccessToken(
                 originalMember.getEmail(),
                 originalMember.getUserId(),
-                originalMember.getRole().toString()
+                originalMember.getRole().toString(),
+                originalMember.getNickname()
         );
         String refreshToken = jwtTokenProvider.createRefreshToken(
                 originalMember.getEmail(),
                 originalMember.getUserId(),
-                originalMember.getRole().toString()
+                originalMember.getRole().toString(),
+                originalMember.getNickname()
         );
         tokenService.saveRefreshToken(originalMember.getUserId(), refreshToken, jwtTokenProvider.getRefreshExpiration());
 
@@ -176,12 +180,14 @@ public class UserController {
         String accessToken = jwtTokenProvider.createAccessToken(
                 originalMember.getEmail(),
                 originalMember.getUserId(),
-                originalMember.getRole().toString()
+                originalMember.getRole().toString(),
+                originalMember.getNickname()
         );
         String refreshToken = jwtTokenProvider.createRefreshToken(
                 originalMember.getEmail(),
                 originalMember.getUserId(),
-                originalMember.getRole().toString()
+                originalMember.getRole().toString(),
+                originalMember.getNickname()
         );
         tokenService.saveRefreshToken(originalMember.getUserId(), refreshToken, jwtTokenProvider.getRefreshExpiration());
 
@@ -204,7 +210,8 @@ public class UserController {
             String accessToken = jwtTokenProvider.createAccessToken(
                     jwtTokenProvider.getEmailFromToken(refreshToken),
                     userId,
-                    jwtTokenProvider.getRoleFromToken(refreshToken)
+                    jwtTokenProvider.getRoleFromToken(refreshToken),
+                    jwtTokenProvider.getNicknameFromToken(refreshToken)
             );
 
 
