@@ -11,13 +11,13 @@ spec:
   template:
     metadata:
       annotations:
-        rollme: "v1-$(data + %s)"
+        rollme: "ROLLME_TAG"
       labels:
         app: user-service
     spec:
       containers:
         - name: user-service
-          image: msj9965/alog-onpremise:latest
+          image: msj9965/alog-user-service:IMAGE_TAG
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -65,5 +65,3 @@ spec:
                 secretKeyRef:
                   name: user-service-secret
                   key: KAKAO_CLIENT_ID
-
-
