@@ -1,0 +1,25 @@
+# user-service-service.yaml
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: user-service
+# spec:
+#   selector:
+#     app: user-service
+#   ports:
+#     - port: 8080
+#       targetPort: 8080
+#   type: ClusterIP
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+spec:
+  selector:
+    app: user-service
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 30080  # 외부 접근 포트, 30000~32767 사이에서 지정
+  type: NodePort
