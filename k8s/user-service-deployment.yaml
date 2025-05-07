@@ -10,6 +10,8 @@ spec:
       app: user-service
   template:
     metadata:
+      annotations:
+        rollme: "v1-$(data + %s)"
       labels:
         app: user-service
     spec:
