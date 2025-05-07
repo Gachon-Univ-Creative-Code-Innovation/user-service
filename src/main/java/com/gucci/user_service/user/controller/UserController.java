@@ -230,7 +230,7 @@ public class UserController {
 
     @GetMapping("/test")
     public String test(){
-        return "jenkins 연동 성공";
+        return "jenkins 연동 성공2";
     }
 
 }
