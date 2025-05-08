@@ -101,6 +101,7 @@ class UserControllerTest {
             request.setNickname("tester");
             request.setPassword("password123");
             request.setRole("USER");
+            request.setGithubUsername("tester");
 
             User savedUser = User.builder()
                     .userId(1L)
@@ -108,6 +109,7 @@ class UserControllerTest {
                     .name(request.getName())
                     .nickname(request.getNickname())
                     .password("encodedPassword")
+                    .githubUrl("https://github.com/tester")
                     .role(Role.USER)
                     .build();
 
@@ -123,6 +125,16 @@ class UserControllerTest {
                     .andExpect(jsonPath("$.status").value(201))
                     .andExpect(jsonPath("$.message").value("테스트유저님 회원가입 완료"))
                     .andExpect(jsonPath("$.data.userId").value(1));
+
+            // verify
+            Mockito.verify(userService).signUp(Mockito.argThat(arg ->
+                    arg.getGithubUsername().equals("tester") &&
+                            arg.getEmail().equals("test@example.com") &&
+                            arg.getName().equals("테스트유저") &&
+                            arg.getNickname().equals("tester") &&
+                            arg.getPassword().equals("password123") &&
+                            arg.getRole().equals("USER")
+            ));
         }
 
         @Test

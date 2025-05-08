@@ -30,6 +30,7 @@ public class SignUpDtoRequestTest {
         dto.setName("John Doe");
         dto.setPassword("password123");
         dto.setNickname("johndoe");
+        dto.setGithubUsername("johndoe");
         dto.setRole("USER");
 
         Set<ConstraintViolation<SignUpDtoRequest>> violations = validator.validate(dto);
@@ -43,6 +44,7 @@ public class SignUpDtoRequestTest {
         dto.setName("John Doe");
         dto.setPassword("password123");
         dto.setNickname("johndoe");
+        dto.setGithubUsername("johndoe");
         dto.setRole("USER");
 
         Set<ConstraintViolation<SignUpDtoRequest>> violations = validator.validate(dto);
@@ -80,6 +82,7 @@ public class SignUpDtoRequestTest {
         dto.setName("John Doe");
         dto.setPassword("short");
         dto.setNickname("johndoe");
+        dto.setGithubUsername("johndoe");
         dto.setRole("USER");
 
         Set<ConstraintViolation<SignUpDtoRequest>> violations = validator.validate(dto);
@@ -114,6 +117,7 @@ public class SignUpDtoRequestTest {
         dto.setName("John Doe");
         dto.setPassword("password123");
         dto.setNickname("johndoe");
+        dto.setGithubUsername("johndoe");
         dto.setRole("INVALID_ROLE");
 
         Set<ConstraintViolation<SignUpDtoRequest>> violations = validator.validate(dto);
