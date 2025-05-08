@@ -32,6 +32,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User signUp(SignUpDtoRequest signUpDtoRequest) {
+
+        String githubUrl = "https://github.com/" + signUpDtoRequest.getGithubUsername();
+
+
         return userRepository.save(
                 User.builder()
                         .email(signUpDtoRequest.getEmail())
@@ -39,6 +43,7 @@ public class UserServiceImpl implements UserService {
                         .name(signUpDtoRequest.getName())
                         .nickname(signUpDtoRequest.getNickname())
                         .password(passwordEncoder.encode(signUpDtoRequest.getPassword()))
+                        .githubUrl(githubUrl)
                 .build());
     }
 

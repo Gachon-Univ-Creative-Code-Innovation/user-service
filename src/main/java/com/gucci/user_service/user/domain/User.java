@@ -30,6 +30,10 @@
         @Column(unique = true)
         private String nickname;
 
+        @Column
+        private String githubUrl;
+
+        @Column
         private String profileUrl;
 
         @Enumerated(EnumType.STRING)
