@@ -1,11 +1,13 @@
 package com.gucci.user_service.user.service;
 
 import com.gucci.user_service.user.config.Response;
+import com.gucci.user_service.user.config.error.UserNotFoundException;
 import com.gucci.user_service.user.domain.Role;
 import com.gucci.user_service.user.domain.SocialType;
 import com.gucci.user_service.user.domain.User;
 import com.gucci.user_service.user.dto.LoginDtoRequest;
 import com.gucci.user_service.user.dto.SignUpDtoRequest;
+import com.gucci.user_service.user.dto.UserInfoDto;
 import com.gucci.user_service.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -93,6 +95,15 @@ public class UserServiceImpl implements UserService {
 
 
         return userRepository.save(user);
+    }
+
+    @Override
+    public UserInfoDto getUserInfoById(Long userId) {
+        UserInfoDto userInfo = userRepository.findUserInfoById(userId);
+        if (userInfo == null) {
+            throw new UserNotFoundException("사용자를 찾을 수 없습니다.");
+        }
+        return userInfo;
     }
 
     @Override

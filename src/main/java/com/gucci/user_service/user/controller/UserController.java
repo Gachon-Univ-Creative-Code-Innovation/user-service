@@ -1,5 +1,6 @@
 package com.gucci.user_service.user.controller;
 
+import com.gucci.user_service.follow.dto.FollowDtoRequest;
 import com.gucci.user_service.user.config.Response;
 import com.gucci.user_service.user.config.error.TokenMissingException;
 import com.gucci.user_service.user.config.security.auth.JwtTokenProvider;
@@ -201,7 +202,8 @@ public class UserController {
 
     }
     @PostMapping("/refresh-token")
-    public ResponseEntity<Response<AccessTokenDtoResponse>> refreshAccessToken(@RequestBody RefreshTokenDtoRequest refreshTokenDtoRequest) {
+    public ResponseEntity<Response<AccessTokenDtoResponse>> refreshAccessToken(
+            @RequestBody RefreshTokenDtoRequest refreshTokenDtoRequest) {
         String refreshToken = refreshTokenDtoRequest.getRefreshToken();
         Long userId = jwtTokenProvider.getUserIdFromToken(refreshToken);
 
@@ -226,11 +228,27 @@ public class UserController {
     }
 
 
+    @GetMapping("/user")
+    public ResponseEntity<Response<UserInfoDto>> getUserById(@RequestHeader("Authorization") String token) {
+        String jwt = getJwtToken(token);
+        Long userId = jwtTokenProvider.getUserIdFromToken(jwt);
+        UserInfoDto userInfo = userService.getUserInfoById(userId);
+
+        Response<UserInfoDto> response = new Response<>(200, "회원 정보 조회 성공", userInfo);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+
 
 
     @GetMapping("/test")
     public String test(){
         return "jenkins 연동 성공2";
     }
+
+    private String getJwtToken(String token) {
+        return token.replace("Bearer", "").trim();
+    }
+
 
 }
