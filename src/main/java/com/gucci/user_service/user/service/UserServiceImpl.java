@@ -7,6 +7,7 @@ import com.gucci.user_service.user.domain.SocialType;
 import com.gucci.user_service.user.domain.User;
 import com.gucci.user_service.user.dto.LoginDtoRequest;
 import com.gucci.user_service.user.dto.SignUpDtoRequest;
+import com.gucci.user_service.user.dto.UpdateUserDtoRequest;
 import com.gucci.user_service.user.dto.UserInfoDto;
 import com.gucci.user_service.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -117,5 +118,31 @@ public class UserServiceImpl implements UserService {
 
 
         return userRepository.existsByNickname(nickname);
+    }
+
+
+    @Override
+    public void updateUser(Long userId, UpdateUserDtoRequest updateUserDtoRequest) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
+
+        if (updateUserDtoRequest.getName() != null) {
+            user.setName(updateUserDtoRequest.getName());
+        }
+
+        if (updateUserDtoRequest.getPassword() != null) {
+            user.setPassword(passwordEncoder.encode(updateUserDtoRequest.getPassword()));
+        }
+        if (updateUserDtoRequest.getGithubUrl() != null) {
+            user.setGithubUrl(updateUserDtoRequest.getGithubUrl());
+        }
+        if (updateUserDtoRequest.getNickname() != null) {
+            if (userRepository.existsByNickname(updateUserDtoRequest.getNickname())) {
+                throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
+            }
+            user.setNickname(updateUserDtoRequest.getNickname());
+        }
+
+        userRepository.save(user);
     }
 }

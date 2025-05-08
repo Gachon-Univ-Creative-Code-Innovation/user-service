@@ -238,7 +238,18 @@ public class UserController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @PatchMapping("/user")
+    public ResponseEntity<Response<String>> updateUser(
+            @RequestHeader("Authorization") String token,
+            @RequestBody @Valid UpdateUserDtoRequest updateUserDtoRequest) {
+        String jwt = getJwtToken(token);
+        Long userId = jwtTokenProvider.getUserIdFromToken(jwt);
 
+        userService.updateUser(userId, updateUserDtoRequest);
+
+        Response<String> response = new Response<>(200, "회원 정보 수정 성공", null);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
 
 
     @GetMapping("/test")
