@@ -1,11 +1,12 @@
 package com.gucci.user_service.user.service;
 
+import com.gucci.user_service.follow.repository.FollowRepository;
 import com.gucci.user_service.user.config.Response;
+import com.gucci.user_service.user.config.error.UserNotFoundException;
 import com.gucci.user_service.user.domain.Role;
 import com.gucci.user_service.user.domain.SocialType;
 import com.gucci.user_service.user.domain.User;
-import com.gucci.user_service.user.dto.LoginDtoRequest;
-import com.gucci.user_service.user.dto.SignUpDtoRequest;
+import com.gucci.user_service.user.dto.*;
 import com.gucci.user_service.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,8 @@ import java.util.regex.Pattern;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AwsS3Service awsS3Service;
+    private final FollowRepository followRepository;
     private static final Pattern EMAIL_REGEX = Pattern.compile(
             "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"
     );
@@ -33,9 +36,27 @@ public class UserServiceImpl implements UserService {
     @Override
     public User signUp(SignUpDtoRequest signUpDtoRequest) {
 
-        String githubUrl = "https://github.com/" + signUpDtoRequest.getGithubUsername();
+        // githubUsername이 없을 경우 기본값 설정
+        String githubUrl = (signUpDtoRequest.getGithubUsername() != null && !signUpDtoRequest.getGithubUsername().isEmpty())
+                ? "https://github.com/" + signUpDtoRequest.getGithubUsername()
+                : null;
 
+        // 프로필 사진이 있을 경우 업로드 처리
+        if (signUpDtoRequest.getProfileImage() != null && !signUpDtoRequest.getProfileImage().isEmpty()) {
+            String newProfileUrl = awsS3Service.uploadFile(signUpDtoRequest.getProfileImage());
+            return userRepository.save(
+                    User.builder()
+                            .email(signUpDtoRequest.getEmail())
+                            .role(Role.valueOf(signUpDtoRequest.getRole()))
+                            .name(signUpDtoRequest.getName())
+                            .nickname(signUpDtoRequest.getNickname())
+                            .password(passwordEncoder.encode(signUpDtoRequest.getPassword()))
+                            .githubUrl(githubUrl)
+                            .profileUrl(newProfileUrl)
+                            .build());
+        }
 
+        // 프로필 사진이 없을 경우 기본값 설정
         return userRepository.save(
                 User.builder()
                         .email(signUpDtoRequest.getEmail())
@@ -44,7 +65,8 @@ public class UserServiceImpl implements UserService {
                         .nickname(signUpDtoRequest.getNickname())
                         .password(passwordEncoder.encode(signUpDtoRequest.getPassword()))
                         .githubUrl(githubUrl)
-                .build());
+                        .profileUrl(null) // 기본 프로필 URL이 있다면 설정 가능
+                        .build());
     }
 
     @Override
@@ -96,6 +118,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserInfoDto getUserInfoById(Long userId) {
+        UserInfoDto userInfo = userRepository.findUserInfoById(userId);
+        if (userInfo == null) {
+            throw new UserNotFoundException("사용자를 찾을 수 없습니다.");
+        }
+        return userInfo;
+    }
+
+    @Override
     public Boolean isNicknameDuplicated(String nickname) {
         if (nickname == null || nickname.isEmpty()) {
             throw new IllegalArgumentException("닉네임이 제공되지 않았습니다.");
@@ -106,5 +137,47 @@ public class UserServiceImpl implements UserService {
 
 
         return userRepository.existsByNickname(nickname);
+    }
+
+
+    @Override
+    public void updateUser(Long userId, UpdateUserDtoRequest updateUserDtoRequest) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
+
+        if (updateUserDtoRequest.getName() != null) {
+            user.setName(updateUserDtoRequest.getName());
+        }
+
+        if (updateUserDtoRequest.getPassword() != null) {
+            user.setPassword(passwordEncoder.encode(updateUserDtoRequest.getPassword()));
+        }
+        if (updateUserDtoRequest.getGithubUrl() != null) {
+            user.setGithubUrl(updateUserDtoRequest.getGithubUrl());
+        }
+        if (updateUserDtoRequest.getNickname() != null) {
+            if (userRepository.existsByNickname(updateUserDtoRequest.getNickname())) {
+                throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
+            }
+            user.setNickname(updateUserDtoRequest.getNickname());
+        }
+
+        // 프로필 사진 업데이트
+        if (updateUserDtoRequest.getProfileImage() != null && !updateUserDtoRequest.getProfileImage().isEmpty()) {
+            // 소셜 로그인 사용자가 아닌 경우에만 기존 프로필 URL 삭제
+            if (user.getProfileUrl() != null && user.getSocialType() == null) {
+                awsS3Service.deleteFile(user.getProfileUrl());
+            }
+            // 새 프로필 사진 업로드
+            String newProfileUrl = awsS3Service.uploadFile(updateUserDtoRequest.getProfileImage());
+            user.setProfileUrl(newProfileUrl);
+        }
+
+        userRepository.save(user);
+    }
+
+    @Override
+    public MainUserInfoDto getMainUserInfo(Long userId) {
+        return userRepository.findMainUserInfoById(userId);
     }
 }

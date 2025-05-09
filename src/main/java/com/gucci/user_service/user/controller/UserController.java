@@ -1,5 +1,6 @@
 package com.gucci.user_service.user.controller;
 
+import com.gucci.user_service.follow.dto.FollowDtoRequest;
 import com.gucci.user_service.user.config.Response;
 import com.gucci.user_service.user.config.error.TokenMissingException;
 import com.gucci.user_service.user.config.security.auth.JwtTokenProvider;
@@ -38,8 +39,8 @@ public class UserController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @PostMapping("/signup")
-    public ResponseEntity<Response<SignUpDtoResponse>> signUp(@Valid @RequestBody SignUpDtoRequest signUpDtoRequest){
+    @PostMapping(value = "/signup", consumes = {"multipart/form-data"})
+    public ResponseEntity<Response<SignUpDtoResponse>> signUp(@Valid @ModelAttribute  SignUpDtoRequest signUpDtoRequest){
 
        User user = userService.signUp(signUpDtoRequest);
        SignUpDtoResponse signUpDtoResponse = new SignUpDtoResponse(user.getUserId());
@@ -201,7 +202,8 @@ public class UserController {
 
     }
     @PostMapping("/refresh-token")
-    public ResponseEntity<Response<AccessTokenDtoResponse>> refreshAccessToken(@RequestBody RefreshTokenDtoRequest refreshTokenDtoRequest) {
+    public ResponseEntity<Response<AccessTokenDtoResponse>> refreshAccessToken(
+            @RequestBody RefreshTokenDtoRequest refreshTokenDtoRequest) {
         String refreshToken = refreshTokenDtoRequest.getRefreshToken();
         Long userId = jwtTokenProvider.getUserIdFromToken(refreshToken);
 
@@ -226,11 +228,49 @@ public class UserController {
     }
 
 
+    @GetMapping("/user")
+    public ResponseEntity<Response<UserInfoDto>> getUserById(@RequestHeader("Authorization") String token) {
+        String jwt = getJwtToken(token);
+        Long userId = jwtTokenProvider.getUserIdFromToken(jwt);
+        UserInfoDto userInfo = userService.getUserInfoById(userId);
 
+        Response<UserInfoDto> response = new Response<>(200, "회원 정보 조회 성공", userInfo);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @PatchMapping(value = "/user", consumes = {"multipart/form-data"})
+    public ResponseEntity<Response<String>> updateUser(
+            @RequestHeader("Authorization") String token,
+            @ModelAttribute @Valid UpdateUserDtoRequest updateUserDtoRequest) {
+        String jwt = getJwtToken(token);
+        Long userId = jwtTokenProvider.getUserIdFromToken(jwt);
+
+        userService.updateUser(userId, updateUserDtoRequest);
+
+        Response<String> response = new Response<>(200, "회원 정보 수정 성공", null);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+
+    @GetMapping("/user/main")
+    public ResponseEntity<Response<MainUserInfoDto>> getMainUserInfo(@RequestHeader("Authorization") String token) {
+        String jwt = getJwtToken(token);
+        Long userId = jwtTokenProvider.getUserIdFromToken(jwt);
+
+        MainUserInfoDto mainUserInfo = userService.getMainUserInfo(userId);
+
+        Response<MainUserInfoDto> response = new Response<>(200, "메인 페이지 정보 조회 성공", mainUserInfo);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
 
     @GetMapping("/test")
     public String test(){
         return "jenkins 연동 성공2";
     }
+
+    private String getJwtToken(String token) {
+        return token.replace("Bearer", "").trim();
+    }
+
 
 }

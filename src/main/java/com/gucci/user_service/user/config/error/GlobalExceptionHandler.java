@@ -1,6 +1,7 @@
     package com.gucci.user_service.user.config.error;
 
     import com.gucci.user_service.user.config.ErrorResponse;
+    import com.gucci.user_service.user.config.Response;
     import org.springframework.dao.DataIntegrityViolationException;
     import org.springframework.http.HttpStatus;
     import org.springframework.http.ResponseEntity;
@@ -108,6 +109,13 @@
                     HttpStatus.UNAUTHORIZED
             );
         }
+
+        @ExceptionHandler(UserNotFoundException.class)
+        public ResponseEntity<Response<String>> handleUserNotFoundException(UserNotFoundException ex) {
+            Response<String> response = new Response<>(404, ex.getMessage(), null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+
         // 🔹 기타 예상 못한 예외
         @ExceptionHandler(Exception.class)
         public ResponseEntity<ErrorResponse> handleException(Exception e) {
