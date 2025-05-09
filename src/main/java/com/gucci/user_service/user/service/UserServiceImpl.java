@@ -1,14 +1,12 @@
 package com.gucci.user_service.user.service;
 
+import com.gucci.user_service.follow.repository.FollowRepository;
 import com.gucci.user_service.user.config.Response;
 import com.gucci.user_service.user.config.error.UserNotFoundException;
 import com.gucci.user_service.user.domain.Role;
 import com.gucci.user_service.user.domain.SocialType;
 import com.gucci.user_service.user.domain.User;
-import com.gucci.user_service.user.dto.LoginDtoRequest;
-import com.gucci.user_service.user.dto.SignUpDtoRequest;
-import com.gucci.user_service.user.dto.UpdateUserDtoRequest;
-import com.gucci.user_service.user.dto.UserInfoDto;
+import com.gucci.user_service.user.dto.*;
 import com.gucci.user_service.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +27,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AwsS3Service awsS3Service;
+    private final FollowRepository followRepository;
     private static final Pattern EMAIL_REGEX = Pattern.compile(
             "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"
     );
@@ -175,5 +174,10 @@ public class UserServiceImpl implements UserService {
         }
 
         userRepository.save(user);
+    }
+
+    @Override
+    public MainUserInfoDto getMainUserInfo(Long userId) {
+        return userRepository.findMainUserInfoById(userId);
     }
 }

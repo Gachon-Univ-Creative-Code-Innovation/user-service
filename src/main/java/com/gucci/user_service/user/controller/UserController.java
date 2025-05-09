@@ -252,6 +252,17 @@ public class UserController {
     }
 
 
+    @GetMapping("/user/main")
+    public ResponseEntity<Response<MainUserInfoDto>> getMainUserInfo(@RequestHeader("Authorization") String token) {
+        String jwt = getJwtToken(token);
+        Long userId = jwtTokenProvider.getUserIdFromToken(jwt);
+
+        MainUserInfoDto mainUserInfo = userService.getMainUserInfo(userId);
+
+        Response<MainUserInfoDto> response = new Response<>(200, "메인 페이지 정보 조회 성공", mainUserInfo);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
     @GetMapping("/test")
     public String test(){
         return "jenkins 연동 성공2";
