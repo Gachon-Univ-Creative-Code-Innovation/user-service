@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AwsS3Service awsS3Service;
     private static final Pattern EMAIL_REGEX = Pattern.compile(
             "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"
     );
@@ -141,6 +142,17 @@ public class UserServiceImpl implements UserService {
                 throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
             }
             user.setNickname(updateUserDtoRequest.getNickname());
+        }
+
+        // 프로필 사진 업데이트
+        if (updateUserDtoRequest.getProfileImage() != null && !updateUserDtoRequest.getProfileImage().isEmpty()) {
+            // 소셜 로그인 사용자가 아닌 경우에만 기존 프로필 URL 삭제
+            if (user.getProfileUrl() != null && user.getSocialType() == null) {
+                awsS3Service.deleteFile(user.getProfileUrl());
+            }
+            // 새 프로필 사진 업로드
+            String newProfileUrl = awsS3Service.uploadFile(updateUserDtoRequest.getProfileImage());
+            user.setProfileUrl(newProfileUrl);
         }
 
         userRepository.save(user);

@@ -5,6 +5,7 @@ import com.gucci.user_service.user.domain.Role;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -25,6 +26,8 @@ public class UpdateUserDtoRequest {
 
     @Size(min = 2, max = 20, message = "닉네임은 2~20자 사이여야 합니다.")
     private String nickname;
+
+    private MultipartFile profileImage; // 프로필 사진 추가
 
 
 

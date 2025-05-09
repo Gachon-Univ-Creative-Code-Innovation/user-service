@@ -238,10 +238,10 @@ public class UserController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @PatchMapping("/user")
+    @PatchMapping(value = "/user", consumes = {"multipart/form-data"})
     public ResponseEntity<Response<String>> updateUser(
             @RequestHeader("Authorization") String token,
-            @RequestBody @Valid UpdateUserDtoRequest updateUserDtoRequest) {
+            @ModelAttribute @Valid UpdateUserDtoRequest updateUserDtoRequest) {
         String jwt = getJwtToken(token);
         Long userId = jwtTokenProvider.getUserIdFromToken(jwt);
 

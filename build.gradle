@@ -55,6 +55,8 @@ dependencies {
 	implementation 'com.github.Gachon-Univ-Creative-Code-Innovation:alog-common:v1.0.2'
 	implementation 'org.springframework.kafka:spring-kafka'
 
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+	implementation("javax.xml.bind:jaxb-api:2.3.1")
 }
 
 tasks.named('test') {
