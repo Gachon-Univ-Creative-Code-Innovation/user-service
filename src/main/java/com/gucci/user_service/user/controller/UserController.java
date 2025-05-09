@@ -39,8 +39,8 @@ public class UserController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @PostMapping("/signup")
-    public ResponseEntity<Response<SignUpDtoResponse>> signUp(@Valid @RequestBody SignUpDtoRequest signUpDtoRequest){
+    @PostMapping(value = "/signup", consumes = {"multipart/form-data"})
+    public ResponseEntity<Response<SignUpDtoResponse>> signUp(@Valid @ModelAttribute  SignUpDtoRequest signUpDtoRequest){
 
        User user = userService.signUp(signUpDtoRequest);
        SignUpDtoResponse signUpDtoResponse = new SignUpDtoResponse(user.getUserId());

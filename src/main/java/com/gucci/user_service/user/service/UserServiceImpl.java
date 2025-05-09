@@ -37,9 +37,27 @@ public class UserServiceImpl implements UserService {
     @Override
     public User signUp(SignUpDtoRequest signUpDtoRequest) {
 
-        String githubUrl = "https://github.com/" + signUpDtoRequest.getGithubUsername();
+        // githubUsername이 없을 경우 기본값 설정
+        String githubUrl = (signUpDtoRequest.getGithubUsername() != null && !signUpDtoRequest.getGithubUsername().isEmpty())
+                ? "https://github.com/" + signUpDtoRequest.getGithubUsername()
+                : null;
 
+        // 프로필 사진이 있을 경우 업로드 처리
+        if (signUpDtoRequest.getProfileImage() != null && !signUpDtoRequest.getProfileImage().isEmpty()) {
+            String newProfileUrl = awsS3Service.uploadFile(signUpDtoRequest.getProfileImage());
+            return userRepository.save(
+                    User.builder()
+                            .email(signUpDtoRequest.getEmail())
+                            .role(Role.valueOf(signUpDtoRequest.getRole()))
+                            .name(signUpDtoRequest.getName())
+                            .nickname(signUpDtoRequest.getNickname())
+                            .password(passwordEncoder.encode(signUpDtoRequest.getPassword()))
+                            .githubUrl(githubUrl)
+                            .profileUrl(newProfileUrl)
+                            .build());
+        }
 
+        // 프로필 사진이 없을 경우 기본값 설정
         return userRepository.save(
                 User.builder()
                         .email(signUpDtoRequest.getEmail())
@@ -48,7 +66,8 @@ public class UserServiceImpl implements UserService {
                         .nickname(signUpDtoRequest.getNickname())
                         .password(passwordEncoder.encode(signUpDtoRequest.getPassword()))
                         .githubUrl(githubUrl)
-                .build());
+                        .profileUrl(null) // 기본 프로필 URL이 있다면 설정 가능
+                        .build());
     }
 
     @Override
