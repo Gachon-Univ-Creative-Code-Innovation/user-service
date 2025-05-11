@@ -30,4 +30,6 @@ public interface UserService {
     String getNickname(Long userId);
 
     void sendResetPasswordEmail(String email);
+
+    void resetPassword(ResetPasswordRequestDto request);
 }
