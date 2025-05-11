@@ -253,6 +253,12 @@ public class UserController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @PostMapping("/reset-password-request")
+    public ApiResponse<?> resetPasswordRequest(@RequestBody ResetPasswordRequestDto dto) {
+        userService.sendResetPasswordEmail(dto.getEmail());
+        return ApiResponse.success();
+    }
+
 
     @GetMapping("/user/main")
     public ResponseEntity<Response<MainUserInfoDto>> getMainUserInfo(@RequestHeader("Authorization") String token) {

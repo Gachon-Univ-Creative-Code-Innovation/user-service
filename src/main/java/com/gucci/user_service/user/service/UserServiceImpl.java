@@ -5,11 +5,13 @@ import com.gucci.common.exception.ErrorCode;
 import com.gucci.user_service.follow.repository.FollowRepository;
 import com.gucci.user_service.user.config.Response;
 import com.gucci.user_service.user.config.error.UserNotFoundException;
+import com.gucci.user_service.user.config.security.auth.JwtTokenProvider;
 import com.gucci.user_service.user.domain.Role;
 import com.gucci.user_service.user.domain.SocialType;
 import com.gucci.user_service.user.domain.User;
 import com.gucci.user_service.user.dto.*;
 import com.gucci.user_service.user.repository.UserRepository;
+import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +38,8 @@ public class UserServiceImpl implements UserService {
     private static final Pattern EMAIL_REGEX = Pattern.compile(
             "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"
     );
+    private final JwtTokenProvider jwtTokenProvider;
+    private final EmailVerificationService emailVerificationService;
 
 
     @Override
@@ -202,6 +206,16 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         return user.getNickname();
+    }
+
+    @Override
+    public void sendResetPasswordEmail(String email){
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.EMAIL_NOT_FOUND));
+
+        String token = jwtTokenProvider.passwordResetToken(email);
+
+        emailVerificationService.sendResetPasswordEmail(email,token);
     }
 
 }

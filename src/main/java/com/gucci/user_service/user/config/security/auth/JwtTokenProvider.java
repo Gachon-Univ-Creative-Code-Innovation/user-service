@@ -17,16 +17,19 @@ public class JwtTokenProvider {
     private final String secretKey;
     private final int accessExpiration;     // 분 단위
     private final int refreshExpiration;    // 분 단위
+    private final int resetPasswordExpiration;
     private final Key SECRET_KEY;
 
     public JwtTokenProvider(
             @Value("${jwt.secret}") String secretKey,
             @Value("${jwt.access-expiration}") int accessExpiration,
-            @Value("${jwt.refresh-expiration}") int refreshExpiration
+            @Value("${jwt.refresh-expiration}") int refreshExpiration,
+            @Value("${jwt.reset-password-expiration}") int resetPasswordExpiration
     ) {
         this.secretKey = secretKey;
         this.accessExpiration = accessExpiration;
         this.refreshExpiration = refreshExpiration;
+        this.resetPasswordExpiration = resetPasswordExpiration;
         this.SECRET_KEY = new SecretKeySpec(
                 java.util.Base64.getDecoder().decode(secretKey),
                 SignatureAlgorithm.HS512.getJcaName()
@@ -61,6 +64,18 @@ public class JwtTokenProvider {
                 .signWith(SECRET_KEY)
                 .compact();
     }
+
+    // PassWord Reset Token
+    public String passwordResetToken(String email) {
+        Date now = new Date();
+        return Jwts.builder()
+                .setSubject(email)
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + resetPasswordExpiration * 60 * 1000L))
+                .signWith(SECRET_KEY)
+                .compact();
+    }
+
     public int getRefreshExpiration() {
         return refreshExpiration;
     }

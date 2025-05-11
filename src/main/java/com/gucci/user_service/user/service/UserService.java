@@ -4,6 +4,7 @@ package com.gucci.user_service.user.service;
 import com.gucci.user_service.user.domain.SocialType;
 import com.gucci.user_service.user.domain.User;
 import com.gucci.user_service.user.dto.*;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 
 import java.util.List;
@@ -27,4 +28,6 @@ public interface UserService {
     Map<Long, String> getNicknameByIds(List<Long> targetIds);
 
     String getNickname(Long userId);
+
+    void sendResetPasswordEmail(String email);
 }
