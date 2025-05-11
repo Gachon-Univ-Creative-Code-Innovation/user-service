@@ -1,7 +1,7 @@
 package com.gucci.user_service.user.controller;
 
 import com.gucci.common.response.ApiResponse;
-import com.gucci.user_service.follow.dto.FollowDtoRequest;
+import com.gucci.common.response.SuccessCode;
 import com.gucci.user_service.user.config.Response;
 import com.gucci.user_service.user.config.error.TokenMissingException;
 import com.gucci.user_service.user.config.security.auth.JwtTokenProvider;
@@ -17,7 +17,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -251,6 +250,18 @@ public class UserController {
 
         Response<String> response = new Response<>(200, "회원 정보 수정 성공", null);
         return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @PostMapping("/reset-password-request")
+    public ApiResponse<?> resetPasswordRequest(@RequestBody ResetPasswordMailRequestDto request) {
+        userService.sendResetPasswordEmail(request.getEmail());
+        return ApiResponse.success();
+    }
+
+    @PostMapping("/reset-password")
+    public ApiResponse<Void> resetPassword(@RequestBody ResetPasswordRequestDto request) {
+        userService.resetPassword(request);
+        return ApiResponse.success(SuccessCode.PASSWORD_CHANGED);
     }
 
 

@@ -49,6 +49,8 @@ public class SecurityConfig {
                                         "/api/user-service/google/login",
                                         "/api/user-service/kakao/login",
                                         "/api/user-service/refresh-token",
+                                        "/api/user-service/reset-password",
+                                        "/api/user-service/reset-password-request",
                                         "/swagger-ui.html",
                                         "/swagger-ui/**",
                                         "/v3/api-docs/**"

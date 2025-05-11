@@ -50,6 +50,7 @@ jwt:
   secret: ${JWT_SECRET}
   access-expiration: 60      # 1시간
   refresh-expiration: 3000   # 50시간
+  reset-password-expiration: 15 # 15분
 
 oauth:
   google:

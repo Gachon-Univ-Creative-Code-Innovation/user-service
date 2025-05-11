@@ -5,19 +5,23 @@ import com.gucci.common.exception.ErrorCode;
 import com.gucci.user_service.follow.repository.FollowRepository;
 import com.gucci.user_service.user.config.Response;
 import com.gucci.user_service.user.config.error.UserNotFoundException;
+import com.gucci.user_service.user.config.security.auth.JwtTokenProvider;
 import com.gucci.user_service.user.domain.Role;
 import com.gucci.user_service.user.domain.SocialType;
 import com.gucci.user_service.user.domain.User;
 import com.gucci.user_service.user.dto.*;
 import com.gucci.user_service.user.repository.UserRepository;
+import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,6 +40,9 @@ public class UserServiceImpl implements UserService {
     private static final Pattern EMAIL_REGEX = Pattern.compile(
             "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"
     );
+    private final JwtTokenProvider jwtTokenProvider;
+    private final EmailVerificationService emailVerificationService;
+    private final RedisTemplate<Object, Object> redisTemplate;
 
 
     @Override
@@ -202,6 +209,36 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         return user.getNickname();
+    }
+
+    @Override
+    public void sendResetPasswordEmail(String email){
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.EMAIL_NOT_FOUND));
+
+        String token = jwtTokenProvider.passwordResetToken(email);
+        redisTemplate.opsForValue().set("reset:token:"+token,email, Duration.ofMinutes(15));
+
+        emailVerificationService.sendResetPasswordEmail(email,token);
+    }
+
+    @Override
+    @Transactional
+    public void resetPassword(ResetPasswordRequestDto request) {
+        Object emailObj = redisTemplate.opsForValue().get("reset:token:" + request.getToken());
+        if (emailObj == null) {
+            throw new CustomException(ErrorCode.EXPIRATION_TOKEN);
+        }
+
+        String email = emailObj.toString();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+
+        redisTemplate.delete("reset:token:" + request.getToken());
     }
 
 }
