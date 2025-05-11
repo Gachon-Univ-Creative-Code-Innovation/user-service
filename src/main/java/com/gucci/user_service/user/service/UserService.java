@@ -6,6 +6,9 @@ import com.gucci.user_service.user.domain.User;
 import com.gucci.user_service.user.dto.*;
 import jakarta.validation.Valid;
 
+import java.util.List;
+import java.util.Map;
+
 public interface UserService {
     public User signUp(SignUpDtoRequest signUpDtoRequest);
 
@@ -20,4 +23,8 @@ public interface UserService {
     void updateUser(Long userId, UpdateUserDtoRequest updateUserDtoRequest);
 
     MainUserInfoDto getMainUserInfo(Long userId);
+
+    Map<Long, String> getNicknameByIds(List<Long> targetIds);
+
+    String getNickname(Long userId);
 }

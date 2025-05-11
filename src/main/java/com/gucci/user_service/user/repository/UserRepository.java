@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -23,4 +24,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
            "(SELECT COUNT(f) FROM Follow f WHERE f.follower.userId = :userId)) " +
            "FROM User u WHERE u.userId = :userId")
     MainUserInfoDto findMainUserInfoById(@Param("userId") Long userId);
+
+    @Query(""" 
+           SELECT u.userId, u.nickname FROM User u
+           WHERE u.userId IN :targetIds
+    """)
+    List<Object[]> findUserIdAndNicknameByIdIn(@Param("targetIds") List<Long> targetIds);
 }

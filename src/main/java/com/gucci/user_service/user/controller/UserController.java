@@ -1,5 +1,6 @@
 package com.gucci.user_service.user.controller;
 
+import com.gucci.common.response.ApiResponse;
 import com.gucci.user_service.follow.dto.FollowDtoRequest;
 import com.gucci.user_service.user.config.Response;
 import com.gucci.user_service.user.config.error.TokenMissingException;
@@ -17,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -261,6 +263,18 @@ public class UserController {
 
         Response<MainUserInfoDto> response = new Response<>(200, "메인 페이지 정보 조회 성공", mainUserInfo);
         return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @GetMapping("/{userId}/nickname")
+    public ApiResponse<String> getNickname(@PathVariable Long userId) {
+        String nickname = userService.getNickname(userId);
+        return ApiResponse.success(nickname);
+    }
+
+    @GetMapping("/nickname")
+    public ApiResponse<Map<Long,String>> getNicknames(@RequestParam List<Long> targetIds) {
+        Map<Long, String> nicknameMap = userService.getNicknameByIds(targetIds);
+        return ApiResponse.success(nicknameMap);
     }
 
     @GetMapping("/test")

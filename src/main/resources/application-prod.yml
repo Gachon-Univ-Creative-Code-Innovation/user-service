@@ -14,7 +14,7 @@ spring:
 
   data:
     redis:
-      host: localhost
+      host: redis
       port: 6379
   datasource:
     url: ${PROD_DB_URL}
@@ -39,7 +39,7 @@ spring:
     import: optional:.env[.properties]
 
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: kafka:29092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
@@ -61,4 +61,4 @@ oauth:
     redirect-uri: https://a-log.netlify.app/oauth/kakao/redirect
 springdoc:
   swagger-ui:
-    path: /swagger-ui.html
+    path: /swagger-ui.html # 나중에 운영 시 비활성화 할 것

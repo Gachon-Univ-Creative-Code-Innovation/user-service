@@ -1,5 +1,7 @@
 package com.gucci.user_service.user.service;
 
+import com.gucci.common.exception.CustomException;
+import com.gucci.common.exception.ErrorCode;
 import com.gucci.user_service.follow.repository.FollowRepository;
 import com.gucci.user_service.user.config.Response;
 import com.gucci.user_service.user.config.error.UserNotFoundException;
@@ -16,8 +18,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -180,4 +185,23 @@ public class UserServiceImpl implements UserService {
     public MainUserInfoDto getMainUserInfo(Long userId) {
         return userRepository.findMainUserInfoById(userId);
     }
+
+    @Override
+    public Map<Long, String> getNicknameByIds(List<Long> targetIds) {
+        List<Object[]> userIdAndNickname = userRepository.findUserIdAndNicknameByIdIn(targetIds);
+
+        return userIdAndNickname.stream()
+                .collect(Collectors.toMap(
+                        row -> (Long) row[0],
+                        row -> (String) row[1]
+                ));
+    }
+
+    @Override
+    public String getNickname(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        return user.getNickname();
+    }
+
 }
