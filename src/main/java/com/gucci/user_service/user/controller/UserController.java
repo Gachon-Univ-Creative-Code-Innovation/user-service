@@ -103,7 +103,7 @@ public class UserController {
         tokenService.saveRefreshToken(user.getUserId(), refreshToken, jwtTokenProvider.getRefreshExpiration());
 
 
-        Response<LoginDtoResponse> response = new Response<>(201, "로그인 성공", new LoginDtoResponse(accessToken, refreshToken, false));
+        Response<LoginDtoResponse> response = new Response<>(200, "로그인 성공", new LoginDtoResponse(accessToken, refreshToken, false));
 
         return ResponseEntity.status(response.getStatus()).body(response);
 
@@ -229,7 +229,7 @@ public class UserController {
     }
 
 
-    @GetMapping("/user")
+    @GetMapping("/user/patch")
     public ResponseEntity<Response<UserInfoDto>> getUserById(@RequestHeader("Authorization") String token) {
         String jwt = getJwtToken(token);
         Long userId = jwtTokenProvider.getUserIdFromToken(jwt);

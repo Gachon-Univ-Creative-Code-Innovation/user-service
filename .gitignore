@@ -13,7 +13,7 @@ src/main/resources/application.yml
 # IntelliJ
 .idea/
 *.iml
-.env
+src/main/resources/.env
 # OS
 .DS_Store
 
