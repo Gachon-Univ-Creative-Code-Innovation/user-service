@@ -76,3 +76,15 @@ cloud:
       bucket: ${AWS_S3_BUCKET_NAME}
     stack:
       auto: false
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus
+
+  prometheus:
+    metrics:
+      export:
+        enabled: true
