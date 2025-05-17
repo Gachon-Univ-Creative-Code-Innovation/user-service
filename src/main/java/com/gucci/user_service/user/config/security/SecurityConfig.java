@@ -53,7 +53,8 @@ public class SecurityConfig {
                                         "/api/user-service/reset-password-request",
                                         "/swagger-ui.html",
                                         "/swagger-ui/**",
-                                        "/v3/api-docs/**"
+                                        "/v3/api-docs/**",
+                                        "/actuator/prometheus"
                                 )
                                 .permitAll()
                                 .anyRequest()
