@@ -103,7 +103,7 @@ public class UserController {
         tokenService.saveRefreshToken(user.getUserId(), refreshToken, jwtTokenProvider.getRefreshExpiration());
 
 
-        Response<LoginDtoResponse> response = new Response<>(200, "로그인 성공", new LoginDtoResponse(accessToken, refreshToken, false));
+        Response<LoginDtoResponse> response = new Response<>(200, "로그인 성공", new LoginDtoResponse(accessToken, refreshToken, false, user.getUserId()));
 
         return ResponseEntity.status(response.getStatus()).body(response);
 
@@ -148,9 +148,8 @@ public class UserController {
         tokenService.saveRefreshToken(originalMember.getUserId(), refreshToken, jwtTokenProvider.getRefreshExpiration());
 
 
-
         Response<LoginDtoResponse> response = new Response<>(
-                200, "로그인 성공", new LoginDtoResponse(accessToken, refreshToken, isNewUser)
+                200, "로그인 성공", new LoginDtoResponse(accessToken, refreshToken, isNewUser, originalMember.getUserId())
         );
 
         return ResponseEntity.status(response.getStatus()).body(response);
@@ -194,9 +193,8 @@ public class UserController {
         tokenService.saveRefreshToken(originalMember.getUserId(), refreshToken, jwtTokenProvider.getRefreshExpiration());
 
         Response<LoginDtoResponse> response = new Response<>(
-                200, "로그인 성공", new LoginDtoResponse(accessToken, refreshToken, isNewUser)
+                200, "로그인 성공", new LoginDtoResponse(accessToken, refreshToken, isNewUser, originalMember.getUserId())
         );
-
         return ResponseEntity.status(response.getStatus()).body(response);
 
 
