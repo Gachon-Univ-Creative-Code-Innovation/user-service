@@ -70,7 +70,8 @@ public class SecurityConfig {
         corsConfiguration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:5173",
                 "https://a-log.netlify.app",
-                "http://43.201.107.237:5173"
+                "http://a-log.site",
+                "https://a-log.site"
         ));
 
         corsConfiguration.setAllowedMethods(Arrays.asList("*"));//모든 메서드 허용
