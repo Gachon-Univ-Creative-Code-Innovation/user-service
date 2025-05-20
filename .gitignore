@@ -21,6 +21,7 @@ src/main/resources/.env
 # Env
 src/main/resources/.env
 .env.*
+.env
 
 # Docker
 *.jar
