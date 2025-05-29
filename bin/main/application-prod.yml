@@ -1,0 +1,78 @@
+
+spring:
+  mail:
+    host: smtp.naver.com  # 또는 smtp.gmail.com
+    port: 587
+    username: alog_gachon@naver.com
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  data:
+    redis:
+      host: redis
+      port: 6379
+  datasource:
+    url: ${PROD_DB_URL}
+    username: ${PROD_DB_USERNAME}
+    password: ${PROD_DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update # 필요에 따라 create, none 등 설정
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    open-in-view: false
+
+  # 필요 시 로깅
+  logging:
+    level:
+      org.hibernate.SQL: debug
+      org.hibernate.type.descriptor.sql.BasicBinder: trace
+  config:
+    import: optional:.env[.properties]
+
+  kafka:
+    bootstrap-servers: kafka:29092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-expiration: 60      # 1시간
+  refresh-expiration: 3000   # 50시간
+  reset-password-expiration: 15 # 15분
+
+oauth:
+  google:
+    client-id: ${GOOGLE_CLIENT_ID}
+    client-secret: ${GOOGLE_CLIENT_SECRET}
+    redirect-uri: https://a-log.netlify.app/oauth/google/redirect
+  kakao:
+    client-id: ${KAKAO_CLIENT_ID}
+    redirect-uri: https://a-log.netlify.app/oauth/kakao/redirect
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html # 나중에 운영 시 비활성화 할 것
+
+#AWS S3
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_S3_ACCESS_KEY}
+      secret-key: ${AWS_S3_SECRET_KEY}
+    region:
+      static: ${AWS_S3_REGION}
+    s3:
+      bucket: ${AWS_S3_BUCKET_NAME}
+    stack:
+      auto: false
