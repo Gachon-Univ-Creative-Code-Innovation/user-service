@@ -38,4 +38,4 @@ reports/
 .vscode/
 
 # Optional: Mac auto files
-__MACOSX/
+__MACOSX/bin/main/.env

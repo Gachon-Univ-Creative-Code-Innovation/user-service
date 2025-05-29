@@ -4,7 +4,18 @@ spring:
     username: testuser
     password: ${TEST_DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
-
+  mail:
+    username: test@example.com
+    password: testpassword
+    host: smtp.example.com
+    port: 587
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   jpa:
     hibernate:
       ddl-auto: create-drop
@@ -13,3 +24,13 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
     format_sql: true
+jwt:
+  secret: sdfnsdnfsnfnldfnsdlfndslfnddkjkjsdfbkjbewxcvkjouwefjnsdfnoeflsldnfsdnfslkdfnslkdfsfdlsnfsejlkxnflsnfefs
+  access-expiration: 60      # 1시간
+  refresh-expiration: 3000   # 50시간
+
+oauth:
+  google:
+    client-id: test-client-id
+    client-secret: test-client-secret
+    redirect-uri: http://localhost:8080/oauth2/callback
