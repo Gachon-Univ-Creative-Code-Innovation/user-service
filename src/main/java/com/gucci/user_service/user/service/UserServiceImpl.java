@@ -117,7 +117,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User createOauth(String socialId, String name,SocialType socialType, String profileUrl) {
         User user = User.builder()
-//                .email(email)
+                .email(socialId + "@" + socialType + ".com")
                 .name(name)
                 .nickname(name)
                 .socialType(socialType)
