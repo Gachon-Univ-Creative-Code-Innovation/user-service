@@ -30,8 +30,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-//                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .cors(AbstractHttpConfigurer::disable) //Gateway에서 CORS 설정
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+//                .cors(AbstractHttpConfigurer::disable) //Gateway에서 CORS 설정
                 .csrf(AbstractHttpConfigurer::disable) //csrf 비활성화
                 //Basic 인증 비활성화
                 //Basic 인증은 사용자 이름과 비밀번호를 Base64로 인코딩하여 인증값으로 활용
@@ -65,23 +65,23 @@ public class SecurityConfig {
                 .build();
     }
 
-//    @Bean
-//    public CorsConfigurationSource corsConfigurationSource() {
-//        CorsConfiguration corsConfiguration = new CorsConfiguration();
-//        corsConfiguration.setAllowedOrigins(Arrays.asList(
-//                "http://localhost:5173",
-//                "https://a-log.netlify.app",
-//                "http://a-log.site",
-//                "https://a-log.site"
-//        ));
-//
-//        corsConfiguration.setAllowedMethods(Arrays.asList("*"));//모든 메서드 허용
-//        corsConfiguration.setAllowedHeaders(Arrays.asList("*"));//모든 헤더값 허용
-//        corsConfiguration.setAllowCredentials(true);//자격증명 허용
-//
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", corsConfiguration);//모든 url 패턴에 대해서 cores 허용 설정
-//
-//        return source;
-//    }
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.setAllowedOrigins(Arrays.asList(
+                "http://localhost:5173",
+                "https://a-log.netlify.app",
+                "http://a-log.site",
+                "https://a-log.site"
+        ));
+
+        corsConfiguration.setAllowedMethods(Arrays.asList("*"));//모든 메서드 허용
+        corsConfiguration.setAllowedHeaders(Arrays.asList("*"));//모든 헤더값 허용
+        corsConfiguration.setAllowCredentials(true);//자격증명 허용
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfiguration);//모든 url 패턴에 대해서 cores 허용 설정
+
+        return source;
+    }
 }
