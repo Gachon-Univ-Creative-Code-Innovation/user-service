@@ -4,6 +4,7 @@ import com.gucci.user_service.user.config.security.auth.JwtTokenFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -40,7 +41,9 @@ public class SecurityConfig {
                 .sessionManagement(s->s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 //특정 url 패턴에 대해서는 인증처리(Authentication)를 제외
                 .authorizeHttpRequests(
-                        a->a.requestMatchers(
+                        a->a
+                                .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()
+                                .requestMatchers(
                                         "/api/user-service/signup",
                                         "/api/user-service/health-check",
                                         "/api/user-service/check-email/**",
