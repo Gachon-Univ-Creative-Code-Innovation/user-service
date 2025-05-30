@@ -25,6 +25,8 @@ public interface UserService {
 
     MainUserInfoDto getMainUserInfo(Long userId);
 
+    Map<Long, String> getProfileByIds(List<Long> targetIds);
+
     Map<Long, String> getNicknameByIds(List<Long> targetIds);
 
     String getNickname(Long userId);

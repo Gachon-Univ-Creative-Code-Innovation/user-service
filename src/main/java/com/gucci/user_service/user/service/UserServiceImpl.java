@@ -195,6 +195,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Map<Long, String> getProfileByIds(List<Long> targetIds) {
+        List<Object[]> userIdAndProfile = userRepository.findUserIdAndProfileByIdIn(targetIds);
+
+        return userIdAndProfile.stream()
+                .collect(Collectors.toMap(
+                        row -> (Long) row[0],
+                        row -> (String) row[1] != null ? (String) row[1] : ""
+                ));
+    }
+
+    @Override
     public Map<Long, String> getNicknameByIds(List<Long> targetIds) {
         List<Object[]> userIdAndNickname = userRepository.findUserIdAndNicknameByIdIn(targetIds);
 

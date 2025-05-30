@@ -285,6 +285,12 @@ public class UserController {
         return ApiResponse.success(nicknameMap);
     }
 
+    @GetMapping("/profiles")
+    public ApiResponse<Map<Long,String>> getProfiles(@RequestParam List<Long> targetIds) {
+        Map<Long, String> profileMap = userService.getProfileByIds(targetIds);
+        return ApiResponse.success(profileMap);
+    }
+
     @GetMapping("/test")
     public String test(){
         return "jenkins 연동 성공2";
