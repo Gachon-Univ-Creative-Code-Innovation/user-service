@@ -17,6 +17,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
@@ -71,15 +72,15 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOrigins(Arrays.asList(
+        corsConfiguration.setAllowedOriginPatterns(List.of(
                 "http://localhost:5173",
                 "https://a-log.netlify.app",
                 "http://a-log.site",
                 "https://a-log.site"
         ));
 
-        corsConfiguration.setAllowedMethods(Arrays.asList("*"));//모든 메서드 허용
-        corsConfiguration.setAllowedHeaders(Arrays.asList("*"));//모든 헤더값 허용
+        corsConfiguration.setAllowedMethods(List.of("*"));//모든 메서드 허용
+        corsConfiguration.setAllowedHeaders(List.of("*"));//모든 헤더값 허용
         corsConfiguration.setAllowCredentials(true);//자격증명 허용
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
