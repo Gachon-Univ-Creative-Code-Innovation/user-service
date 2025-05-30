@@ -4,11 +4,15 @@ import com.gucci.user_service.user.dto.AccessTokenDto;
 import com.gucci.user_service.user.dto.KakaoProfileDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @Service
@@ -24,24 +28,22 @@ public class KakaoServiceImpl implements KakaoService {
 
     @Override
     public AccessTokenDto getAccessToken(String code) {
-        RestClient restClient = RestClient.create();
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("code", code);
+        params.add("grant_type", "authorization_code");
         params.add("client_id", kakaoClientId);
         params.add("redirect_uri", kakaoRedirectUri);
-        params.add("grant_type", "authorization_code");
+        params.add("code", code);
 
-        ResponseEntity<AccessTokenDto> response = restClient.post()
-                .uri("https://kauth.kakao.com/oauth/token")
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                //?code=xxxx&client_id=xxxx&client_secret=xxxx&redirect_uri=xxxx&grant_type=authorization_code
-                .body(params)
-                //retrieve()는 응답 body값만을 추출
-                .retrieve()
-                .toEntity(AccessTokenDto.class);
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
-        log.info("응답 AccessToken JSON: "+ response.getBody());
+        ResponseEntity<AccessTokenDto> response = restTemplate.postForEntity(
+                "https://kauth.kakao.com/oauth/token", request, AccessTokenDto.class
+        );
 
         System.out.println("응답 AccessToken JSON: " + response.getBody());
 

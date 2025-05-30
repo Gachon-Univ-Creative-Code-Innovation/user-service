@@ -126,7 +126,6 @@ public class UserController {
             isNewUser = true;
             originalMember = userService.createOauth(
                     googleProfileDto.getSub(),
-                    googleProfileDto.getEmail(),
                     googleProfileDto.getName(),
                     SocialType.GOOGLE, googleProfileDto.getPicture()
             );
@@ -169,7 +168,6 @@ public class UserController {
                     userService
                             .createOauth(
                                     kakaoProfileDto.getId(),
-                                    kakaoProfileDto.getKakao_account().getEmail(),
                                     kakaoProfileDto.getKakao_account().getProfile().getNickname(),
                                     SocialType.KAKAO,
                                     kakaoProfileDto.getKakao_account().getProfile().getProfile_image_url()
@@ -184,6 +182,7 @@ public class UserController {
                 originalMember.getRole().toString(),
                 originalMember.getNickname()
         );
+
         String refreshToken = jwtTokenProvider.createRefreshToken(
                 originalMember.getEmail(),
                 originalMember.getUserId(),

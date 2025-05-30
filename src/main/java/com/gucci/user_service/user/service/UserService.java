@@ -19,7 +19,7 @@ public interface UserService {
 
     Boolean isNicknameDuplicated(String nickname);
     public User getUserBySocialId(String socialId);
-    public User createOauth(String socialId, String email, String name,SocialType socialType, String profileUrl);
+    public User createOauth(String socialId, String name,SocialType socialType, String profileUrl);
     UserInfoDto getUserInfoById(Long userId);
     void updateUser(Long userId, UpdateUserDtoRequest updateUserDtoRequest);
 
