@@ -3,14 +3,8 @@ spring:
     name: user-service
   config:
     import: "optional:configserver:"
-  cloud:
-    config:
-      uri: http://config-service.config.svc.cluster.local:8888
-      name: user-service
-      label: main
-      fail-fast: true
   profiles:
-    active: cloud
+    active: dev
 
 logging:
   level:
