@@ -69,24 +69,4 @@ public class SecurityConfig {
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOriginPatterns(List.of(
-                "http://localhost:5173",
-                "https://a-log.netlify.app",
-                "http://a-log.site",
-                "https://a-log.site"
-        ));
-
-        corsConfiguration.setAllowedMethods(List.of("*"));//모든 메서드 허용
-        corsConfiguration.setAllowedHeaders(List.of("*"));//모든 헤더값 허용
-        corsConfiguration.setAllowCredentials(true);//자격증명 허용
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfiguration);//모든 url 패턴에 대해서 cores 허용 설정
-
-        return source;
-    }
 }
