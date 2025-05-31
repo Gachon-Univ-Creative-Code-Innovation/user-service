@@ -13,9 +13,6 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,8 +30,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-//                .cors(Customizer.withDefaults())
-                .cors(AbstractHttpConfigurer::disable) //Gateway에서 CORS 설정
+                .cors(Customizer.withDefaults())
+//                .cors(AbstractHttpConfigurer::disable) //Gateway에서 CORS 설정
                 .csrf(AbstractHttpConfigurer::disable) //csrf 비활성화
                 //Basic 인증 비활성화
                 //Basic 인증은 사용자 이름과 비밀번호를 Base64로 인코딩하여 인증값으로 활용
