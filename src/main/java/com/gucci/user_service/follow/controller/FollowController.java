@@ -26,7 +26,6 @@ public class FollowController {
         Long followerId = jwtTokenProvider.getUserIdFromToken(jwt);
         followService.follow(followerId, followDtoRequest.getFolloweeId());
 
-
         Response<Null> response = new Response<>(200, "팔로우 성공", null);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
