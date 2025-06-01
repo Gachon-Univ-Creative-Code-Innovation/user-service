@@ -1,15 +1,28 @@
+#spring:
+#  application:
+#    name: user-service
+#  config:
+#    import: "optional:configserver:"
+#  profiles:
+#    active: dev
+#
+#logging:
+#  level:
+#    org.springframework.boot.context.config: debug
+#
+#
+
 spring:
-  application:
-    name: user-service
   config:
     import: "optional:configserver:"
-  profiles:
-    active: dev
+  cloud:
+    config:
+      uri: http://config-service.config.svc.cluster.local:8888
+      name: user-service
+      label: main
+      fail-fast: true
+
 
 logging:
   level:
     org.springframework.boot.context.config: debug
-
-
-
-
