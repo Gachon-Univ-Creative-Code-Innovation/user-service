@@ -56,10 +56,10 @@ oauth:
   google:
     client-id: ${GOOGLE_CLIENT_ID}
     client-secret: ${GOOGLE_CLIENT_SECRET}
-    redirect-uri: https://a-log.netlify.app/oauth/google/redirect
+    redirect-uri: https://a-log.site/oauth/google/redirect
   kakao:
     client-id: ${KAKAO_CLIENT_ID}
-    redirect-uri: https://a-log.netlify.app/oauth/kakao/redirect
+    redirect-uri: https://a-log.site/oauth/kakao/redirect
 springdoc:
   swagger-ui:
     path: /swagger-ui.html # 나중에 운영 시 비활성화 할 것
@@ -76,3 +76,15 @@ cloud:
       bucket: ${AWS_S3_BUCKET_NAME}
     stack:
       auto: false
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus
+
+  prometheus:
+    metrics:
+      export:
+        enabled: true

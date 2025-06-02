@@ -1,6 +1,18 @@
+#spring:
+#  application:
+#    name: user-service
+#  config:
+#    import: "optional:configserver:"
+#  profiles:
+#    active: dev
+#
+#logging:
+#  level:
+#    org.springframework.boot.context.config: debug
+#
+#
+
 spring:
-  application:
-    name: user-service
   config:
     import: "optional:configserver:"
   cloud:
@@ -9,13 +21,8 @@ spring:
       name: user-service
       label: main
       fail-fast: true
-  profiles:
-    active: cloud
+
 
 logging:
   level:
     org.springframework.boot.context.config: debug
-
-
-
-

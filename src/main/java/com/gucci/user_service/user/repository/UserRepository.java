@@ -15,8 +15,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     public Optional<User> findByEmail(String email);
     Optional <User>findBySocialId(String socialId);
     Boolean existsByNickname(String nickname);
-    @Query("SELECT new com.gucci.user_service.user.dto.UserInfoDto(u.email, u.name, u.nickname, u.profileUrl, u.githubUrl) " +
-            "FROM User u WHERE u.userId = :userId")
+    @Query("SELECT new com.gucci.user_service.user.dto.UserInfoDto(u.email, u.name, u.nickname, u.profileUrl, u.githubUrl, u.socialType IS NOT NULL) " +
+           "FROM User u WHERE u.userId = :userId")
     UserInfoDto findUserInfoById(@Param("userId") Long userId);
 
     @Query("SELECT new com.gucci.user_service.user.dto.MainUserInfoDto(u.nickname, u.profileUrl, " +
