@@ -293,7 +293,7 @@ public class UserController {
 
     @GetMapping("/test")
     public String test(){
-        return "jenkins 연동 성공2";
+        return "jenkins, k8s 연동 성공";
     }
 
     private String getJwtToken(String token) {
