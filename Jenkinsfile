@@ -1,6 +1,6 @@
 pipeline {
   agent {
-    label 'kubeagent'  // Jenkins UI에서 설정한 PodTemplate의 라벨
+    label 'kubeagent'
   }
 
   environment {
@@ -26,17 +26,16 @@ pipeline {
       }
     }
 
-    stage('Build Docker Image') {
+    stage('Build and Push Docker Image with Kaniko') {
       steps {
-        sh "docker build -t ${IMAGE_NAME}:${TAG} ."
-      }
-    }
-
-    stage('Push to DockerHub') {
-      steps {
-        withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-          sh "echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin"
-          sh "docker push ${IMAGE_NAME}:${TAG}"
+        container('kaniko') {
+          sh """
+            /kaniko/executor \
+            --dockerfile=Dockerfile \
+            --context=\$(pwd) \
+            --destination=${IMAGE_NAME}:${TAG} \
+            --verbosity=info
+          """
         }
       }
     }
