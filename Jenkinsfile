@@ -36,10 +36,15 @@ spec:
 
     stage('Build and Push Docker Image with Kaniko') {
       container('kaniko') {
+        // 빌드 결과물이 잘 있는지 확인하는 단계 (디버깅용)
+        sh 'ls -al /home/jenkins/agent'
+        sh 'ls -al /home/jenkins/agent/build/libs'   // gradle jar 위치 예시
+
+        // Kaniko 빌드 및 푸시 명령어
         sh '''
           /kaniko/executor \
-          --dockerfile=Dockerfile \
-          --context=$(pwd) \
+          --dockerfile=/home/jenkins/agent/Dockerfile \
+          --context=/home/jenkins/agent \
           --destination=msj9965/alog-user:latest \
           --verbosity=info
         '''
