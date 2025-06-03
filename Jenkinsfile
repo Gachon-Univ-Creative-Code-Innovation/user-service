@@ -3,7 +3,7 @@ podTemplate(
     containers: [
         containerTemplate(
             name: 'jnlp',
-            image: 'jenkins/inbound-agent:latest-jdk17',
+            image: 'msj9965/jenkins-agent:java17',
             ttyEnabled: true,
             command: ''
         )
@@ -55,7 +55,7 @@ podTemplate(
                 sh "kubectl rollout restart deployment user-service -n ${env.NAMESPACE}"
             }
         }
-
+ㄷ
         stage('Finish') {
             echo '✅ 배포 성공!'
         }
