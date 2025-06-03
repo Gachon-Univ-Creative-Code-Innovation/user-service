@@ -1,7 +1,7 @@
 pipeline {
   agent {
     kubernetes {
-      inheritFrom 'jenkins-agent' // Pod Template name으로 연결
+      label 'jenkins-agent'
       defaultContainer 'jnlp'
     }
   }
