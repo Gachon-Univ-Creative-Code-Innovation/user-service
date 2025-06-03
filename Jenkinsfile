@@ -29,13 +29,13 @@ pipeline {
     stage('Build and Push Docker Image with Kaniko') {
       steps {
         container('kaniko') {
-          sh """
+          sh '''
             /kaniko/executor \
             --dockerfile=Dockerfile \
-            --context=\$(pwd) \
-            --destination=${IMAGE_NAME}:${TAG} \
+            --context=$(pwd) \
+            --destination=$IMAGE_NAME:$TAG \
             --verbosity=info
-          """
+          '''
         }
       }
     }
