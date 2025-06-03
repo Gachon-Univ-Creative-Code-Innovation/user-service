@@ -1,63 +1,60 @@
-podTemplate(
-    label: 'kubeagent',
-    containers: [
-        containerTemplate(
-            name: 'jnlp',
-            image: 'msj9965/jenkins-agent:java17',
-            ttyEnabled: true,
-            command: ''
-        )
-    ]
-) {
-    node('kubeagent') {
-        stage('환경 변수 설정') {
-            container('jnlp') {
-                env.JAVA_HOME = "/usr/lib/jvm/java-17-openjdk-amd64"
-                env.PATH = "${env.JAVA_HOME}/bin:${env.PATH}"
-                env.IMAGE_NAME = 'msj9965/alog-user'
-                env.TAG = "latest"
-                env.DEPLOYMENT_FILE = 'user-service-deployment.yaml'
-                env.NAMESPACE = 'user'
-            }
-        }
+pipeline {
+  agent {
+    label 'kubeagent'  // Jenkins UI에서 설정한 PodTemplate의 라벨
+  }
 
-        stage('Checkout') {
-            container('jnlp') {
-                git branch: 'main', url: 'https://github.com/Gachon-Univ-Creative-Code-Innovation/user-service.git'
-            }
-        }
+  environment {
+    JAVA_HOME = "/usr/lib/jvm/java-17-openjdk-amd64"
+    PATH = "/usr/lib/jvm/java-17-openjdk-amd64/bin:$PATH"
+    IMAGE_NAME = 'msj9965/alog-user'
+    TAG = "latest"
+    DEPLOYMENT_FILE = 'user-service-deployment.yaml'
+    NAMESPACE = 'user'
+  }
 
-        stage('Build Jar') {
-            container('jnlp') {
-                sh 'chmod +x gradlew'
-                sh './gradlew build -x test'
-            }
-        }
-
-        stage('Build Docker Image') {
-            container('jnlp') {
-                sh "docker build -t ${env.IMAGE_NAME}:${env.TAG} ."
-            }
-        }
-
-        stage('Push to DockerHub') {
-            container('jnlp') {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                    sh "echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin"
-                    sh "docker push ${env.IMAGE_NAME}:${env.TAG}"
-                }
-            }
-        }
-
-        stage('Deploy to Kubernetes') {
-            container('jnlp') {
-                sh "kubectl apply -f ${env.DEPLOYMENT_FILE} -n ${env.NAMESPACE}"
-                sh "kubectl rollout restart deployment user-service -n ${env.NAMESPACE}"
-            }
-        }
-ㄷ
-        stage('Finish') {
-            echo '✅ 배포 성공!'
-        }
+  stages {
+    stage('Checkout') {
+      steps {
+        git branch: 'main', url: 'https://github.com/Gachon-Univ-Creative-Code-Innovation/user-service.git'
+      }
     }
+
+    stage('Build Jar') {
+      steps {
+        sh 'chmod +x gradlew'
+        sh './gradlew build -x test'
+      }
+    }
+
+    stage('Build Docker Image') {
+      steps {
+        sh "docker build -t ${IMAGE_NAME}:${TAG} ."
+      }
+    }
+
+    stage('Push to DockerHub') {
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+          sh "echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin"
+          sh "docker push ${IMAGE_NAME}:${TAG}"
+        }
+      }
+    }
+
+    stage('Deploy to Kubernetes') {
+      steps {
+        sh "kubectl apply -f ${DEPLOYMENT_FILE} -n ${NAMESPACE}"
+        sh "kubectl rollout restart deployment user-service -n ${NAMESPACE}"
+      }
+    }
+  }
+
+  post {
+    success {
+      echo '✅ 배포 성공!'
+    }
+    failure {
+      echo '❌ 배포 실패. 로그를 확인해주세요.'
+    }
+  }
 }
