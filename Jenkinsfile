@@ -29,6 +29,7 @@ pipeline {
     stage('Build and Push Docker Image with Kaniko') {
       steps {
         container('kaniko') {
+          sh 'echo "Kaniko container command start"'
           sh '''
             /kaniko/executor \
             --dockerfile=Dockerfile \
