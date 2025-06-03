@@ -58,7 +58,8 @@ public class SecurityConfig {
                                         "/swagger-ui/**",
                                         "/v3/api-docs/**",
                                         "/actuator/prometheus",
-                                        "/api/user-service/{userId}/profile-nickname"
+                                        "/api/user-service/{userId}/profile-nickname",
+                                        "/api/user-service/follow/followers/**"
                                 )
                                 .permitAll()
                                 .anyRequest()

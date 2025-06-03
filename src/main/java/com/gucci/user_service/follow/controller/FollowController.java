@@ -1,5 +1,6 @@
 package com.gucci.user_service.follow.controller;
 
+import com.gucci.common.response.ApiResponse;
 import com.gucci.user_service.follow.dto.RemoveFollowerDtoRequest;
 import com.gucci.user_service.user.config.Response;
 import com.gucci.user_service.follow.dto.FollowDtoRequest;
@@ -52,6 +53,13 @@ public class FollowController {
         Response<List<Long>>response = new Response<>(200, "팔로워 목록 조회 성공",followers);
 
         return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    // FeignClient용 - token 사용 X
+    @GetMapping("/followers/{userId}")
+    public ApiResponse<List<Long>> getFollowersById(@PathVariable Long userId) {
+        List<Long> followers = followService.getFollowers(userId);
+        return ApiResponse.success(followers);
     }
 
     @GetMapping("/followees")
