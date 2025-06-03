@@ -1,10 +1,10 @@
 pipeline {
   agent {
-      kubernetes {
-        label 'jenkins-agent'  // PodTemplate에서 정의한 라벨
-        defaultContainer 'jnlp'
-      }
+    kubernetes {
+      inheritFrom 'jenkins-agent' // Pod Template name으로 연결
+      defaultContainer 'jnlp'
     }
+  }
 
   environment {
     JAVA_HOME = "/usr/lib/jvm/java-17-openjdk-amd64"
@@ -50,7 +50,6 @@ pipeline {
     stage('Deploy to Kubernetes') {
       steps {
         script {
-          // 이미지 PullSecret이 설정된 deployment YAML을 사용
           sh "kubectl apply -f ${DEPLOYMENT_FILE} -n ${NAMESPACE}"
           sh "kubectl rollout restart deployment user-service -n ${NAMESPACE}"
         }
