@@ -59,7 +59,9 @@ public class SecurityConfig {
                                         "/v3/api-docs/**",
                                         "/actuator/prometheus",
                                         "/api/user-service/*/profile-nickname",
-                                        "/api/user-service/*/details"
+                                        "/api/user-service/*/details",
+                                        "/api/user-service/{userId}/profile-nickname",
+                                        "/api/user-service/follow/followers/**"
                                 )
                                 .permitAll()
                                 .anyRequest()
