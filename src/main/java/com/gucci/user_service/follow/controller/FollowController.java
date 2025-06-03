@@ -1,5 +1,6 @@
 package com.gucci.user_service.follow.controller;
 
+import com.gucci.user_service.follow.dto.RemoveFollowerDtoRequest;
 import com.gucci.user_service.user.config.Response;
 import com.gucci.user_service.follow.dto.FollowDtoRequest;
 import com.gucci.user_service.follow.service.FollowService;
@@ -59,6 +60,15 @@ public class FollowController {
         Long userId = jwtTokenProvider.getUserIdFromToken(jwt);
         List<Long> followees = followService.getFollowees(userId);
         Response<List<Long>> response = new Response<>(200, "팔로잉 목록 조회 성공", followees);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    public ResponseEntity<Response<Null>> removeFollower(@RequestHeader("Authorization") String token, @RequestBody RemoveFollowerDtoRequest removeFollowerDtoRequest) {
+        String jwt = getJwtToken(token);
+        Long userId = jwtTokenProvider.getUserIdFromToken(jwt);
+        followService.removeFollower(userId, removeFollowerDtoRequest.getFollowerId());
+
+        Response<Null> response = new Response<>(200, "팔로워 삭제 성공", null);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
