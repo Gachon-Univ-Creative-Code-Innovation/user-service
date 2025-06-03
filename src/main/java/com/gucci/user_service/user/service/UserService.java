@@ -34,4 +34,6 @@ public interface UserService {
     void sendResetPasswordEmail(String email);
 
     void resetPassword(ResetPasswordRequestDto request);
+
+    Map<String, String> getProfileUrlAndNickname(Long userId);
 }

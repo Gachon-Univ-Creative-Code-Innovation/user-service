@@ -36,4 +36,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
            WHERE u.userId IN :targetIds
     """)
     List<Object[]> findUserIdAndProfileByIdIn(List<Long> targetIds);
+
+    @Query("SELECT u.profileUrl, u.nickname FROM User u WHERE u.userId = :userId")
+    Object[] findProfileUrlAndNicknameByUserId(@Param("userId") Long userId);
 }
