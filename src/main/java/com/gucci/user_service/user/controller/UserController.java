@@ -4,6 +4,7 @@ import com.gucci.common.response.ApiResponse;
 import com.gucci.common.response.SuccessCode;
 import com.gucci.user_service.user.config.Response;
 import com.gucci.user_service.user.config.error.TokenMissingException;
+import com.gucci.user_service.user.config.error.UserNotFoundException;
 import com.gucci.user_service.user.config.security.auth.JwtTokenProvider;
 import com.gucci.user_service.user.domain.SocialType;
 import com.gucci.user_service.user.domain.User;
@@ -291,10 +292,37 @@ public class UserController {
         return ApiResponse.success(profileMap);
     }
 
+
+    @GetMapping("/{userId}/profile-nickname")
+    public ResponseEntity<Response<Map<String, String>>> getProfileUrlAndNickname(@PathVariable Long userId) {
+        try {
+            Map<String, String> profileData = userService.getProfileUrlAndNickname(userId);
+            Response<Map<String, String>> response = new Response<>(200, "프로필 URL 및 닉네임 조회 성공", profileData);
+            return ResponseEntity.status(response.getStatus()).body(response);
+        } catch (UserNotFoundException e) {
+            Response<Map<String, String>> response = new Response<>(404, e.getMessage(), null);
+            return ResponseEntity.status(response.getStatus()).body(response);
+        }
+    }
+
+    @GetMapping("/{userId}/details")
+    public ResponseEntity<Response<Map<String, String>>> getUserDetails(@PathVariable Long userId) {
+        try {
+            Map<String, String> userDetails = userService.getUserDetails(userId);
+            Response<Map<String, String>> response = new Response<>(200, "회원 정보 조회 성공", userDetails);
+            return ResponseEntity.status(response.getStatus()).body(response);
+        } catch (UserNotFoundException e) {
+            Response<Map<String, String>> response = new Response<>(404, e.getMessage(), null);
+            return ResponseEntity.status(response.getStatus()).body(response);
+        }
+    }
+
     @GetMapping("/test")
     public String test(){
         return "jenkins, k8s 연동 성공";
     }
+
+
 
     private String getJwtToken(String token) {
         return token.replace("Bearer", "").trim();

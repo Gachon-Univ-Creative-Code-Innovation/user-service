@@ -85,4 +85,13 @@ public class FollowServiceImpl implements FollowService {
     public List<Long> getFollowees(Long userId) {
         return followRepository.findFolloweeIdsByFollowerId(userId);
     }
+
+    @Override
+    public void removeFollower(Long userId, Long followerId) {
+        FollowId followId = new FollowId(followerId, userId);
+        Follow follow = followRepository.findById(followId)
+                .orElseThrow(() -> new NotFoundException("팔로우 관계를 찾을 수 없습니다."));
+
+        followRepository.delete(follow);
+    }
 }

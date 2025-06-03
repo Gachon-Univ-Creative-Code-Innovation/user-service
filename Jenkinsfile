@@ -1,7 +1,14 @@
 pipeline {
-  agent any
+  agent {
+      kubernetes {
+        label 'jenkins-agent'  // PodTemplate에서 정의한 라벨
+        defaultContainer 'jnlp'
+      }
+    }
 
   environment {
+    JAVA_HOME = "/usr/lib/jvm/java-17-openjdk-amd64"
+    PATH = "/usr/lib/jvm/java-17-openjdk-amd64/bin:$PATH"
     DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
     IMAGE_NAME = 'msj9965/alog-user'
     TAG = "latest"

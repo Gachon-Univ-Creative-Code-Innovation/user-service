@@ -13,4 +13,6 @@ public interface FollowService {
     List<Long> getFollowers(Long userId);
 
     List<Long> getFollowees(Long userId);
+
+    void removeFollower(Long userId, Long followerId);
 }
