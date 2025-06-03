@@ -36,4 +36,6 @@ public interface UserService {
     void resetPassword(ResetPasswordRequestDto request);
 
     Map<String, String> getProfileUrlAndNickname(Long userId);
+
+    Map<String, String> getUserDetails(Long userId);
 }

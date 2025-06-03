@@ -270,4 +270,21 @@ public class UserServiceImpl implements UserService {
 
         return profileData;
     }
+
+    @Override
+    public Map<String, String> getUserDetails(Long userId) {
+        Object[] result = userRepository.findUserDetailsByUserId(userId);
+        if (result == null || result.length == 0) {
+            throw new UserNotFoundException("해당 userId를 가진 사용자를 찾을 수 없습니다.");
+        }
+
+        Map<String, String> userDetails = new HashMap<>();
+        userDetails.put("name", (String) result[0]);
+        userDetails.put("profileUrl", (String) result[1]);
+        userDetails.put("githubUrl", (String) result[2]);
+        userDetails.put("nickname", (String) result[3]);
+        userDetails.put("email", (String) result[4]);
+
+        return userDetails;
+    }
 }

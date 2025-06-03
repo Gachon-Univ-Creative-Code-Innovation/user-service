@@ -305,6 +305,18 @@ public class UserController {
         }
     }
 
+    @GetMapping("/{userId}/details")
+    public ResponseEntity<Response<Map<String, String>>> getUserDetails(@PathVariable Long userId) {
+        try {
+            Map<String, String> userDetails = userService.getUserDetails(userId);
+            Response<Map<String, String>> response = new Response<>(200, "회원 정보 조회 성공", userDetails);
+            return ResponseEntity.status(response.getStatus()).body(response);
+        } catch (UserNotFoundException e) {
+            Response<Map<String, String>> response = new Response<>(404, e.getMessage(), null);
+            return ResponseEntity.status(response.getStatus()).body(response);
+        }
+    }
+
     @GetMapping("/test")
     public String test(){
         return "jenkins, k8s 연동 성공";
