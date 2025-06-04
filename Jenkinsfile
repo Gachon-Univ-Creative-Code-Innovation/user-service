@@ -27,19 +27,28 @@ pipeline {
     }
 
     stage('Build and Push Docker Image with Kaniko') {
-      steps {
-        container('kaniko') {
-          sh 'echo "Kaniko container command start"'
-          sh '''
-            /kaniko/executor \
-            --dockerfile=Dockerfile \
-            --context=$(pwd) \
-            --destination=$IMAGE_NAME:$TAG \
-            --verbosity=info
-          '''
+          steps {
+            container('kaniko') {
+              // 1. 가장 기본적인 쉘 명령 실행 테스트 (BusyBox 쉘 명시)
+              sh '''#!/busybox/sh
+    echo "Attempting to run commands inside Kaniko container with busybox sh..."
+    pwd
+    ls -la
+    printenv
+    echo "Basic commands finished."
+    '''
+              // 2. 원래 Kaniko 실행 명령 (마찬가지로 BusyBox 쉘 명시)
+              sh '''#!/busybox/sh -xe
+    echo "Kaniko container command start"
+    /kaniko/executor \
+    --dockerfile=Dockerfile \
+    --context=$(pwd) \
+    --destination=$IMAGE_NAME:$TAG \
+    --verbosity=info
+    '''
+            }
+          }
         }
-      }
-    }
 
     stage('Deploy to Kubernetes') {
       steps {

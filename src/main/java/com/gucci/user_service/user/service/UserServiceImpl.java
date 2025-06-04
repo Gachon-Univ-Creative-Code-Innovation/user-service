@@ -22,10 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -85,7 +82,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean isEmailDuplicated(String email) {
 
-                if (email == null || email.isEmpty()) {
+        if (email == null || email.isEmpty()) {
             throw new IllegalArgumentException("이메일이 제공되지 않았습니다.");
         }
         if (!EMAIL_REGEX.matcher(email).matches()) {
@@ -98,11 +95,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public User login(LoginDtoRequest loginDTORequest) {
         Optional<User> optUser = userRepository.findByEmail(loginDTORequest.getEmail());
-        if(!optUser.isPresent()){
+        if (!optUser.isPresent()) {
             throw new IllegalArgumentException("이메일을 확인해주세요.");
         }
         User user = optUser.get();
-        if(!passwordEncoder.matches(loginDTORequest.getPassword(), user.getPassword())){
+        if (!passwordEncoder.matches(loginDTORequest.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 올바르지 않습니다.");
         }
         return user;
@@ -116,7 +113,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User createOauth(String socialId, String name,SocialType socialType, String profileUrl) {
+    public User createOauth(String socialId, String name, SocialType socialType, String profileUrl) {
         User user = User.builder()
                 .email(socialId + "@" + socialType + ".com")
                 .name(name)
@@ -225,14 +222,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void sendResetPasswordEmail(String email){
+    public void sendResetPasswordEmail(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.EMAIL_NOT_FOUND));
 
         String token = jwtTokenProvider.passwordResetToken(email);
-        redisTemplate.opsForValue().set("reset:token:"+token,email, Duration.ofMinutes(15));
+        redisTemplate.opsForValue().set("reset:token:" + token, email, Duration.ofMinutes(15));
 
-        emailVerificationService.sendResetPasswordEmail(email,token);
+        emailVerificationService.sendResetPasswordEmail(email, token);
     }
 
     @Override
@@ -259,32 +256,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Map<String, String> getProfileUrlAndNickname(Long userId) {
-        Object[] result = userRepository.findProfileUrlAndNicknameByUserId(userId);
-        if (result == null || result.length == 0) {
-            throw new UserNotFoundException("해당 userId를 가진 사용자를 찾을 수 없습니다.");
-        }
+        ProfileDto dto = userRepository.findProfileDtoByUserId(userId)
+                .orElseThrow(() -> new UserNotFoundException("해당 userId를 가진 사용자를 찾을 수 없습니다."));
 
         Map<String, String> profileData = new HashMap<>();
-        profileData.put("profileUrl", (String) result[0]);
-        profileData.put("nickname", (String) result[1]);
+        profileData.put("profileUrl", dto.getProfileUrl());
+        profileData.put("nickname", dto.getNickname());
 
         return profileData;
     }
 
     @Override
-    public Map<String, String> getUserDetails(Long userId) {
-        Object[] result = userRepository.findUserDetailsByUserId(userId);
-        if (result == null || result.length == 0) {
-            throw new UserNotFoundException("해당 userId를 가진 사용자를 찾을 수 없습니다.");
-        }
-
-        Map<String, String> userDetails = new HashMap<>();
-        userDetails.put("name", (String) result[0]);
-        userDetails.put("profileUrl", (String) result[1]);
-        userDetails.put("githubUrl", (String) result[2]);
-        userDetails.put("nickname", (String) result[3]);
-        userDetails.put("email", (String) result[4]);
-
-        return userDetails;
+    public UserDetailsDto getUserDetails(Long userId) {
+        return userRepository.findUserDetailsDtoByUserId(userId)
+                .orElseThrow(() -> new UserNotFoundException("해당 userId를 가진 사용자를 찾을 수 없습니다."));
     }
 }
