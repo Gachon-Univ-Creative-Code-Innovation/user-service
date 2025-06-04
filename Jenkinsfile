@@ -38,37 +38,37 @@ pipeline {
     }
 
     stage('Build and Push Docker Image with Kaniko Pod') {
-      steps {
-        script {
-          def kanikoPodName = "${KANIKO_POD_NAME_PREFIX}-${BUILD_NUMBER}".toLowerCase()
-          def podManifest = """
-          apiVersion: v1
-          kind: Pod
-          metadata:
-            name: ${kanikoPodName}
-            namespace: ${NAMESPACE}
-            labels:
-              jenkins-build: "${BUILD_NUMBER}"
-              app: kaniko
-          spec:
-            containers:
-            - name: kaniko
-              image: '${KANIKO_EXECUTOR_IMAGE}'
-              args:
-                - "--dockerfile=${DOCKERFILE_PATH}"
-                - "--context=${env.KANIKO_GIT_CONTEXT}" // environment 블록 또는 Checkout에서 최종 설정된 값 사용
-                - "--destination=${IMAGE_NAME}:${TAG}"
-                - "--verbosity=info"
-              volumeMounts:
-                - name: docker-config
-                  mountPath: /kaniko/.docker
-                  readOnly: true
-            restartPolicy: Never
-            volumes:
-              - name: docker-config
-                secret:
-                  secretName: "dockercred"
-          """
+          steps {
+            script {
+              def kanikoPodName = "${KANIKO_POD_NAME_PREFIX}-${BUILD_NUMBER}".toLowerCase()
+              def podManifest = """
+              apiVersion: v1
+              kind: Pod
+              metadata:
+                name: ${kanikoPodName}
+                namespace: ${NAMESPACE}
+                labels:
+                  jenkins-build: "${BUILD_NUMBER}"
+                  app: kaniko
+              spec:
+                containers:
+                - name: kaniko
+                  image: '${KANIKO_EXECUTOR_IMAGE}'
+                  args: // 각 인수는 '-'로 시작하며 올바르게 들여쓰기 되어야 합니다.
+                    - "--dockerfile=${DOCKERFILE_PATH}"
+                    - "--context=${env.KANIKO_GIT_CONTEXT}"
+                    - "--destination=${IMAGE_NAME}:${TAG}"
+                    - "--verbosity=info"
+                  volumeMounts:
+                    - name: docker-config
+                      mountPath: /kaniko/.docker
+                      readOnly: true
+                restartPolicy: Never
+                volumes:
+                  - name: docker-config
+                    secret:
+                      secretName: "dockercred"
+              """
           try {
             echo "Applying Kaniko Pod manifest for: ${kanikoPodName} with context ${env.KANIKO_GIT_CONTEXT}"
             sh "echo '${podManifest}' | kubectl apply -f -"
