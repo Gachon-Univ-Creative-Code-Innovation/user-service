@@ -15,11 +15,11 @@ spec:
       labels:
         app: user-service
     spec:
-      imagePullSecrets:
-        - name: dockerhub-secret
+      # imagePullSecrets:  # <--- 이 블록 전체를 삭제하거나 주석 처리합니다.
+      #   - name: dockerhub-secret
       containers:
         - name: user-service
-          image: msj9965/alog-user:main
+          image: msj9965/alog-user:main # Docker Hub에 이 이름과 태그로 이미지가 있는지 확인
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
