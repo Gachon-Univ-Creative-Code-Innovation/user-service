@@ -84,7 +84,7 @@ public class EmailVerificationService {
     }
 
     public void sendResetPasswordEmail(String email, String token){
-        String resetLink = "https://a-log.netlify.app/reset-password?token=" + token;
+        String resetLink = "https://a-log.site/reset-password?token=" + token;
 
         try {
             MimeMessage message = mailSender.createMimeMessage();
