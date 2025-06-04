@@ -19,7 +19,7 @@ spec:
         - name: dockerhub-secret
       containers:
         - name: user-service
-          image: msj9965/alog-user:latest
+          image: msj9965/alog-user:main
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
