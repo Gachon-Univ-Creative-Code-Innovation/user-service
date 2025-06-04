@@ -38,20 +38,9 @@ pipeline {
     stage('Build and Push Docker Image with Kaniko Pod') {
           steps {
             script {
-              def kanikoPodName = "${KANIKO_POD_NAME_PREFIX}-${BUILD_NUMBER}".toLowerCase()
-              // args 리스트를 Groovy 리스트로 먼저 정의
-              def kanikoArgs = [
-                "--dockerfile=${DOCKERFILE_PATH}",
-                "--context=${env.KANIKO_GIT_CONTEXT}",
-                "--destination=${IMAGE_NAME}:${TAG}",
-                "--verbosity=info"
-                // 필요시 Kaniko 캐시 설정 추가
-                // "--cache=true",
-                // "--cache-repo=${IMAGE_NAME}-cache"
-              ]
+              def kanikoPodName = "${KANIKO_POD_NAME_PREFIX}-${BUILD_NUMBER}-debug".toLowerCase() // 디버깅용 Pod 이름
+              // kanikoArgs는 이 디버깅 단계에서는 사용되지 않습니다.
 
-              // YAML 문자열을 생성할 때 args 부분을 명시적으로 배열로 변환하여 주입
-              // 또는, 아래와 같이 직접 YAML 배열 형식으로 멀티라인 문자열에 포함
               def podManifest = """
               apiVersion: v1
               kind: Pod
@@ -60,50 +49,68 @@ pipeline {
                 namespace: ${NAMESPACE}
                 labels:
                   jenkins-build: "${BUILD_NUMBER}"
-                  app: kaniko
+                  app: kaniko-debug
               spec:
                 containers:
-                - name: kaniko
-                  image: '${KANIKO_EXECUTOR_IMAGE}'
+                - name: kaniko-debug-container # 컨테이너 이름도 변경 가능
+                  image: '${KANIKO_EXECUTOR_IMAGE}' # Kaniko 이미지를 사용 (busybox 쉘 포함)
+                  command: ["/busybox/sh", "-c"]
                   args:
-                    - "${kanikoArgs[0]}"
-                    - "${kanikoArgs[1]}"
-                    - "${kanikoArgs[2]}"
-                    - "${kanikoArgs[3]}"
-                    # 만약 캐시 인수가 있다면 추가:
-                    # - "${kanikoArgs[4]}"
-                    # - "${kanikoArgs[5]}"
+                    - > # 여러 명령을 깔끔하게 실행하기 위해 YAML의 >- (fold) 스타일 사용
+                      echo "========= Kaniko Pod Internal Debug Start =========";
+                      echo "--- Current User & Group ---";
+                      id;
+                      echo "\\n--- Listing /kaniko/ ---";
+                      ls -la /kaniko/;
+                      echo "\\n--- Listing /kaniko/.docker/ ---";
+                      ls -la /kaniko/.docker/;
+                      echo "\\n--- Content of /kaniko/.docker/config.json ---";
+                      cat /kaniko/.docker/config.json || echo "Error: /kaniko/.docker/config.json not found or cannot be read";
+                      echo "\\n--- Environment Variables (DOCKER_CONFIG check) ---";
+                      printenv | grep DOCKER_CONFIG || echo "DOCKER_CONFIG environment variable not set";
+                      echo "\\n========= Kaniko Pod Internal Debug End =========";
+                      echo "Debug Pod will sleep for 5 minutes for manual inspection if needed, then exit.";
+                      sleep 300;
+                      echo "Exiting debug pod."
                   volumeMounts:
                     - name: docker-config
-                      mountPath: /kaniko/.docker
+                      mountPath: /kaniko/.docker # Kaniko가 config.json을 찾는 기본 경로
                       readOnly: true
-                restartPolicy: Never
+                restartPolicy: Never # 디버깅 후에는 Pod가 재시작되지 않도록 Never 유지
                 volumes:
                   - name: docker-config
                     secret:
                       secretName: "dockercred"
               """
 
-              // 디버깅을 위해 최종 YAML 출력 (선택 사항)
-              // echo "Generated Kaniko Pod Manifest:\n${podManifest}"
-
               try {
-                echo "Applying Kaniko Pod manifest for: ${kanikoPodName} with context ${env.KANIKO_GIT_CONTEXT}"
-                sh "echo '''${podManifest}''' | kubectl apply -f -" // 삼중 작은따옴표로 변경 시도
-                sh "kubectl wait --for=condition=Ready pod/${kanikoPodName} -n ${NAMESPACE} --timeout=5m"
-                echo "Kaniko pod ${kanikoPodName} is Ready. Waiting for build completion..."
-                sh "kubectl wait --for=condition=Succeeded pod/${kanikoPodName} -n ${NAMESPACE} --timeout=20m"
-                echo "Kaniko build successful for pod: ${kanikoPodName}"
-                echo "Fetching Kaniko pod logs:"
-                sh "kubectl logs pod/${kanikoPodName} -n ${NAMESPACE}"
+                echo "Applying Kaniko DEBUG Pod manifest for: ${kanikoPodName}"
+                sh "echo '''${podManifest}''' | kubectl apply -f -"
+
+                echo "Waiting for Kaniko DEBUG Pod ${kanikoPodName} to be Ready..."
+                sh "kubectl wait --for=condition=Ready pod/${kanikoPodName} -n ${NAMESPACE} --timeout=3m"
+
+                echo "Kaniko DEBUG pod ${kanikoPodName} is Ready. Fetching logs (will show config.json content, etc.):"
+                // Pod가 완료될 때까지 기다리지 않고, 실행 중인 로그를 가져옵니다.
+                // sleep 명령어 때문에 Pod는 'Succeeded' 상태가 되지 않을 수 있습니다.
+                // Jenkins는 이 sh 명령이 완료될 때까지 기다립니다 (sleep 시간만큼).
+                // 더 나은 방법은 Jenkins 로그에서 직접 확인하거나, 별도 터미널에서 kubectl logs를 사용하는 것입니다.
+                sh "kubectl logs pod/${kanikoPodName} -n ${NAMESPACE} --timestamps"
+
+                echo "Debug script in Kaniko pod has finished (or timed out waiting for logs)."
+                // 이 디버깅 실행은 '성공'으로 간주하지 않고, 정보 수집이 목적입니다.
+                // 따라서 currentBuild.result를 FAILURE로 설정하거나 에러를 발생시키지 않습니다.
+
               } catch (Exception e) {
-                echo "Error during Kaniko Pod execution for pod ${kanikoPodName}: ${e.message}"
-                echo "Attempting to fetch logs from Kaniko pod (on error):"
-                sh "kubectl logs pod/${kanikoPodName} -n ${NAMESPACE} || true"
+                echo "Error during Kaniko DEBUG Pod setup or log retrieval for pod ${kanikoPodName}: ${e.message}"
+                // 실패 시에도 로그를 가져오도록 시도
+                sh "kubectl logs pod/${kanikoPodName} -n ${NAMESPACE} --timestamps || true"
+                // 디버깅 목적이므로, 파이프라인을 실패시키지 않을 수 있습니다.
+                // 하지만 어떤 오류인지 파악하기 위해 일단은 실패로 처리합니다.
                 currentBuild.result = 'FAILURE'
-                error("Kaniko build failed. See logs above for details.")
+                error("Kaniko DEBUG pod execution encountered an error.")
               } finally {
-                echo "Deleting Kaniko pod ${kanikoPodName}..."
+                echo "Deleting Kaniko DEBUG pod ${kanikoPodName}..."
                 sh "kubectl delete pod/${kanikoPodName} -n ${NAMESPACE} --ignore-not-found=true"
               }
             }
