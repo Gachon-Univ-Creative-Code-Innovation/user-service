@@ -25,24 +25,8 @@ pipeline {
       steps {
         // Jenkins 에이전트 작업 공간으로 소스 코드 체크아웃
         // 이 단계는 'Build Jar' 단계에서 사용할 코드를 가져옵니다.
-        // Jenkinsfile이 SCM에서 로드될 때 이미 checkout이 수행되므로,
-        // 이 단계가 반드시 명시적으로 필요하지 않을 수도 있지만,
-        // 파이프라인의 명확성을 위해 두는 것이 일반적입니다.
-        // 간단히 checkout scm 또는 특정 브랜치를 지정할 수 있습니다.
         git branch: 'main', url: GIT_REPO_URL // 또는 checkout scm
-        script {
-          // 이미지 태그를 Git 커밋 기반으로 동적으로 설정하고 싶다면, 여기서 작업:
-          // def commit = sh(script: "git rev-parse HEAD", returnStdout: true).trim()
-          // def shortCommit = commit.substring(0,7)
-          // env.TAG = "git-${shortCommit}"
-          // echo "Image tag set to: ${env.TAG}"
-
-          // 만약 KANIKO_GIT_CONTEXT를 현재 체크아웃된 커밋으로 하고 싶다면 여기서 설정:
-          // def currentCommit = sh(script: "git rev-parse HEAD", returnStdout: true).trim()
-          // env.KANIKO_GIT_CONTEXT = "${GIT_REPO_URL}#${currentCommit}"
-          // echo "Kaniko Git context updated to current commit: ${env.KANIKO_GIT_CONTEXT}"
-          // (이 경우 environment 블록의 KANIKO_GIT_CONTEXT는 초기값으로만 사용되거나 제거)
-        }
+        // 비어 있거나 주석만 있는 script 블록 제거
       }
     }
 
