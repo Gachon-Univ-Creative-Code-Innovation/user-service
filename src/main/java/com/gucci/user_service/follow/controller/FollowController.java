@@ -71,6 +71,7 @@ public class FollowController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @DeleteMapping("/remove-follower")
     public ResponseEntity<Response<Null>> removeFollower(@RequestHeader("Authorization") String token, @RequestBody RemoveFollowerDtoRequest removeFollowerDtoRequest) {
         String jwt = getJwtToken(token);
         Long userId = jwtTokenProvider.getUserIdFromToken(jwt);

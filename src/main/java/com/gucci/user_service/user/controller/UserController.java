@@ -293,7 +293,7 @@ public class UserController {
     }
 
 
-    @GetMapping("/{userId}/profile-nickname")
+    @GetMapping("/profile-nickname/{userId}")
     public ResponseEntity<Response<Map<String, String>>> getProfileUrlAndNickname(@PathVariable Long userId) {
         try {
             Map<String, String> profileData = userService.getProfileUrlAndNickname(userId);
@@ -305,11 +305,11 @@ public class UserController {
         }
     }
 
-    @GetMapping("/{userId}/details")
-    public ResponseEntity<Response<Map<String, String>>> getUserDetails(@PathVariable Long userId) {
+    @GetMapping("/details/{userId}")
+    public ResponseEntity<?> getUserDetails(@PathVariable Long userId) {
         try {
-            Map<String, String> userDetails = userService.getUserDetails(userId);
-            Response<Map<String, String>> response = new Response<>(200, "회원 정보 조회 성공", userDetails);
+            UserDetailsDto userDetails = userService.getUserDetails(userId);
+            Response<UserDetailsDto> response = new Response<>(200, "회원 정보 조회 성공", userDetails);
             return ResponseEntity.status(response.getStatus()).body(response);
         } catch (UserNotFoundException e) {
             Response<Map<String, String>> response = new Response<>(404, e.getMessage(), null);

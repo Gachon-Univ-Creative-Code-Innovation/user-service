@@ -2,6 +2,8 @@ package com.gucci.user_service.user.repository;
 
 import com.gucci.user_service.user.domain.User;
 import com.gucci.user_service.user.dto.MainUserInfoDto;
+import com.gucci.user_service.user.dto.ProfileDto;
+import com.gucci.user_service.user.dto.UserDetailsDto;
 import com.gucci.user_service.user.dto.UserInfoDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -37,9 +39,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     """)
     List<Object[]> findUserIdAndProfileByIdIn(List<Long> targetIds);
 
-    @Query("SELECT u.profileUrl, u.nickname FROM User u WHERE u.userId = :userId")
-    Object[] findProfileUrlAndNicknameByUserId(@Param("userId") Long userId);
-
-    @Query("SELECT u.name, u.profileUrl, u.githubUrl, u.nickname, u.email FROM User u WHERE u.userId = :userId")
-    Object[] findUserDetailsByUserId(@Param("userId") Long userId);
+    @Query("SELECT new com.gucci.user_service.user.dto.ProfileDto(u.profileUrl, u.nickname) FROM User u WHERE u.userId = :userId")
+    Optional<ProfileDto> findProfileDtoByUserId(@Param("userId") Long userId);
+    @Query("SELECT new com.gucci.user_service.user.dto.UserDetailsDto(u.name, u.profileUrl, u.githubUrl, u.nickname, u.email) " +
+            "FROM User u WHERE u.userId = :userId")
+    Optional<UserDetailsDto> findUserDetailsDtoByUserId(@Param("userId") Long userId);
 }
