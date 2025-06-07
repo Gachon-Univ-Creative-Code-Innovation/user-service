@@ -81,12 +81,12 @@ public class FollowController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @GetMapping("/followers/{userId}")
-    public ResponseEntity<Response<List<Long>>> getFollowersByUserId(@PathVariable Long userId) {
-        List<Long> followers = followService.getFollowers(userId);
-        Response<List<Long>> response = new Response<>(200, "팔로워 목록 조회 성공", followers);
-        return ResponseEntity.status(response.getStatus()).body(response);
-    }
+//    @GetMapping("/followers/{userId}")
+//    public ResponseEntity<Response<List<Long>>> getFollowersByUserId(@PathVariable Long userId) {
+//        List<Long> followers = followService.getFollowers(userId);
+//        Response<List<Long>> response = new Response<>(200, "팔로워 목록 조회 성공", followers);
+//        return ResponseEntity.status(response.getStatus()).body(response);
+//    }
 
     @GetMapping("/followees/{userId}")
     public ResponseEntity<Response<List<Long>>> getFolloweesByUserId(@PathVariable Long userId) {
