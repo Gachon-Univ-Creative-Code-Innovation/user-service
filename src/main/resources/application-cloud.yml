@@ -7,5 +7,3 @@ spring:
       name: user-service
       label: main
       fail-fast: true
-
-
